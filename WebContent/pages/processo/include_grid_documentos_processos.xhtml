@@ -27,20 +27,6 @@
 				
 	  		</p:column>
 	  		
-			<p:column headerText="Excluir" styleClass="coluna5">
-				
-				<p:commandLink process="@this" action="#{mbeanProcesso.removerDocumento}" global="false" rendered="#{empty cadastroViaCliente ? true : false}">
-					<h:graphicImage value="../resources/images/delete16.png" style="border: 0px" />
-					<f:setPropertyActionListener target="#{mbeanProcesso.documentoSelecionado}" value="#{documento}" />
-				</p:commandLink>
-				
-				<p:commandLink process="@this" action="#{clienteFaces.processoAux.removerDocumento}" global="false" rendered="#{not empty cadastroViaCliente ? cadastroViaCliente : false}">
-					<h:graphicImage value="../resources/images/delete16.png" style="border: 0px" />
-					<f:setPropertyActionListener target="#{clienteFaces.processoAux.documentoSelecionado}" value="#{documento}" />
-				</p:commandLink>
-				
-			</p:column>
-	  		
 	  	</p:dataTable>
 	  	
 	</p:outputPanel>

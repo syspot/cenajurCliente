@@ -7,6 +7,7 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -20,6 +21,8 @@ import javax.persistence.Transient;
 import br.com.cenajur.util.CenajurUtil;
 import br.com.cenajur.util.Constantes;
 import br.com.topsys.database.hibernate.TSActiveRecordAb;
+import br.com.topsys.util.TSDateUtil;
+import br.com.topsys.util.TSParseUtil;
 import br.com.topsys.util.TSUtil;
 
 @Entity
@@ -30,13 +33,25 @@ public class Agenda extends TSActiveRecordAb<Agenda>{
 	 * 
 	 */
 	private static final long serialVersionUID = -7867621300772491361L;
+	
+	public Agenda() {
+	}
+	
+	public Agenda(Long id, String tipoAgendaDescricao, Date dataInicial, Date dataFinal, String descricao) {
+		this.id = id;
+		this.tipoAgenda = new TipoAgenda();
+		this.tipoAgenda.setDescricao(tipoAgendaDescricao);
+		this.dataInicial = dataInicial;
+		this.dataFinal = dataFinal;
+		this.descricao = descricao;
+	}
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator="agendas_id")
 	@SequenceGenerator(name="agendas_id", sequenceName="agendas_id_seq")
 	private Long id;
 	
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "tipo_agenda_id")
 	private TipoAgenda tipoAgenda;
 	
@@ -79,6 +94,8 @@ public class Agenda extends TSActiveRecordAb<Agenda>{
 	@Transient
 	private Colaborador colaboradorBusca;
 
+	
+	
 	public Long getId() {
 		return TSUtil.tratarLong(id);
 	}
@@ -97,6 +114,14 @@ public class Agenda extends TSActiveRecordAb<Agenda>{
 
 	public Date getDataInicial() {
 		return dataInicial;
+	}
+	
+	public String getDataInicialFormatada() {
+		return TSParseUtil.dateToString(dataInicial, TSDateUtil.DD_MM_YYYY_HH_MM);
+	}
+	
+	public String getTitleAba() {
+		return TSParseUtil.dateToString(dataInicial, TSDateUtil.DD_MM_YYYY_HH_MM) + " -- | --  " + CenajurUtil.obterResumoGrid(getDescricao(), 100);
 	}
 
 	public void setDataInicial(Date dataInicial) {
@@ -233,7 +258,7 @@ public class Agenda extends TSActiveRecordAb<Agenda>{
 		
 		StringBuilder query = new StringBuilder();
 		
-		query.append(" from Agenda a where 1 = 1 ");
+		query.append(" select new Agenda(a.id, a.tipoAgenda.descricao, a.dataInicial, a.dataFinal, a.descricao) from Agenda a where 1 = 1 ");
 		
 		if(!TSUtil.isEmpty(descricao)){
 			query.append(CenajurUtil.getParamSemAcento("a.descricao"));
@@ -243,12 +268,8 @@ public class Agenda extends TSActiveRecordAb<Agenda>{
 			query.append("and a.tipoAgenda.id = ? ");
 		}
 		
-		if(!TSUtil.isEmpty(dataInicial)){
-			query.append("and date(a.dataInicial) = date(?) ");
-		}
-		
-		if(!TSUtil.isEmpty(dataFinal)){
-			query.append("and date(a.dataFinal) = date(?) ");
+		if(!TSUtil.isEmpty(dataInicial) && !TSUtil.isEmpty(dataFinal)){
+			query.append(" and a.dataInicial between ? and ? ");
 		}
 		
 		List<Object> params = new ArrayList<Object>();
@@ -261,11 +282,8 @@ public class Agenda extends TSActiveRecordAb<Agenda>{
 			params.add(tipoAgenda.getId());
 		}
 		
-		if(!TSUtil.isEmpty(dataInicial)){
+		if(!TSUtil.isEmpty(dataInicial) && !TSUtil.isEmpty(dataFinal)){
 			params.add(dataInicial);
-		}
-		
-		if(!TSUtil.isEmpty(dataFinal)){
 			params.add(dataFinal);
 		}
 		
@@ -286,6 +304,12 @@ public class Agenda extends TSActiveRecordAb<Agenda>{
 			
 		}
 		
+		if(!TSUtil.isEmpty(tipoAgenda) && !TSUtil.isEmpty(tipoAgenda.getId())){
+			
+			query.append(" and a.tipoAgenda.id = ? ");
+			
+		}
+		
 		List<Object> params = new ArrayList<Object>();
 		
 		params.add(dataInicial);
@@ -297,7 +321,36 @@ public class Agenda extends TSActiveRecordAb<Agenda>{
 			
 		}
 		
+		if(!TSUtil.isEmpty(tipoAgenda) && !TSUtil.isEmpty(tipoAgenda.getId())){
+			
+			params.add(tipoAgenda.getId());
+			
+		}
+
 		return super.find(query.toString(), "a.dataInicial", params.toArray());
 	}
-
+	
+	public List<Agenda> pesquisarVisitasPorCliente(Cliente cliente) {
+		
+		StringBuilder query = new StringBuilder();
+		
+		query.append(" select distinct a from Agenda a left outer join fetch a.agendasColaboradores ac where 1 = 1 ");
+		
+		if(!TSUtil.isEmpty(cliente) && !TSUtil.isEmpty(cliente.getId())){
+			
+			query.append(" and a.cliente.id = ? ");
+			
+		}
+		
+		List<Object> params = new ArrayList<Object>();
+		
+		if(!TSUtil.isEmpty(cliente) && !TSUtil.isEmpty(cliente.getId())){
+			
+			params.add(cliente.getId());
+			
+		}
+		
+		return super.find(query.toString(), "a.dataInicial desc", params.toArray());
+	}
+	
 }

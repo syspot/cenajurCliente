@@ -1,13 +1,9 @@
 package br.com.cenajur.faces;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.faces.model.SelectItem;
-
-import org.primefaces.context.RequestContext;
-import org.primefaces.event.FileUploadEvent;
 
 import br.com.cenajur.model.AndamentoProcesso;
 import br.com.cenajur.model.CategoriaDocumento;
@@ -16,11 +12,7 @@ import br.com.cenajur.model.Processo;
 import br.com.cenajur.model.ProcessoNumero;
 import br.com.cenajur.model.TipoAndamentoProcesso;
 import br.com.cenajur.model.TipoCategoria;
-import br.com.cenajur.util.CenajurUtil;
-import br.com.cenajur.util.ColaboradorUtil;
 import br.com.cenajur.util.Constantes;
-import br.com.topsys.exception.TSApplicationException;
-import br.com.topsys.file.TSFile;
 import br.com.topsys.util.TSUtil;
 import br.com.topsys.web.util.TSFacesUtil;
 
@@ -40,6 +32,7 @@ public class ProcessoAndamentoUtil {
 	private DocumentoAndamentoProcesso documentoAndamentoProcessoSelecionado;
 	
 	public ProcessoAndamentoUtil() {
+		this.crudModel = new Processo();
 		setCategoriaDocumento(new CategoriaDocumento());
 		getCategoriaDocumento().setTipoCategoria(new TipoCategoria(Constantes.TIPO_CATEGORIA_ANDAMENTO_PROCESSO));
 		setDocumentoAndamentoProcesso(new DocumentoAndamentoProcesso());
@@ -53,10 +46,16 @@ public class ProcessoAndamentoUtil {
 	}
 	
 	private void initAndamentoProcesso(){
+		
 		this.andamentoProcesso = new AndamentoProcesso();
 		this.andamentoProcesso.setTipoAndamentoProcesso(new TipoAndamentoProcesso());
 		this.andamentoProcesso.setDocumentos(new ArrayList<DocumentoAndamentoProcesso>());
 		this.processoNumeroPrincipal = this.processoNumeroBackup;
+		
+		if(TSUtil.isEmpty(processoNumeroPrincipal)){
+			this.processoNumeroPrincipal = new ProcessoNumero();
+		}
+		
 	}
 	
 	private void initCombo(){
@@ -68,124 +67,10 @@ public class ProcessoAndamentoUtil {
 		return null;
 	}
 	
-	public void enviarDocumento(FileUploadEvent event) {
-		getDocumentoAndamentoProcesso().setDocumento(event.getFile());
-		getDocumentoAndamentoProcesso().setArquivo(CenajurUtil.obterNomeTemporarioArquivo(event.getFile()));
-		
-		if(CenajurUtil.isDocumentoPdf(event.getFile())){
-			getDocumentoAndamentoProcesso().setDescricaoBusca(CenajurUtil.getDescricaoPDF(event.getFile()));
-		}
-		
-	}
-		
-	public String addDocumento(){
-		
-		RequestContext context = RequestContext.getCurrentInstance();
-		
-		if(TSUtil.isEmpty(getDocumentoAndamentoProcesso().getDocumento())){
-			CenajurUtil.addErrorMessage("Documento: Campo obrigatório");
-			context.addCallbackParam("sucesso", false);
-			return null;
-		}
-
-		if(getDocumentoAndamentoProcesso().getDescricao().length() > 100){
-			CenajurUtil.addErrorMessage("Descrição: Campo muito longo, tamanho máximo de 100 caracteres");
-			context.addCallbackParam("sucesso", false);
-			return null;
-		}
-		
-		context.addCallbackParam("sucesso", true);
-		
-		getDocumentoAndamentoProcesso().setAndamentoProcesso(this.andamentoProcesso);
-		getDocumentoAndamentoProcesso().setCategoriaDocumento(getCategoriaDocumento().getById());
-		getAndamentoProcesso().getDocumentos().add(getDocumentoAndamentoProcesso());
-		getCategoriaDocumento().setId(null);
-		setDocumentoAndamentoProcesso(new DocumentoAndamentoProcesso());
-		return null;
-	}
-	
-	public String removerDocumentoAndamentoProcesso(){
-		this.andamentoProcesso.getDocumentos().remove(this.documentoAndamentoProcessoSelecionado);
-		return null;
-	}
-	
-	private boolean validaCampos(){
-		
-		boolean erro = false;
-		
-
-		if(this.andamentoProcesso.getDescricao().length() > 500){
-			erro = true;
-			CenajurUtil.addErrorMessage("Descrição: Campo muito longo, tamanho máximo de 500 caracteres");
-		}
-		
-		return erro;
-	}
-	
-	public String cadastrarAndamentoProcesso() throws TSApplicationException{
-		
-		if(validaCampos()){
-			return null;
-		}
-		
-		this.andamentoProcesso.setProcessoNumero(processoNumeroPrincipal);
-		this.andamentoProcesso.setTipoAndamentoProcesso(this.andamentoProcesso.getTipoAndamentoProcesso().getById());
-		this.andamentoProcesso.setDataAtualizacao(new Date());
-		this.andamentoProcesso.setColaboradorAtualizacao(ColaboradorUtil.obterColaboradorConectado());
-		this.andamentoProcesso.setDataCadastro(new Date());
-		this.andamentoProcesso.save();
-		
-		for(DocumentoAndamentoProcesso doc : this.andamentoProcesso.getDocumentos()){
-			
-			if(!TSUtil.isEmpty(doc.getDocumento())){
-				
-				doc.setArquivo(doc.getId() + TSFile.obterExtensaoArquivo(doc.getArquivo()));
-				CenajurUtil.criaArquivo(doc.getDocumento(), doc.getCaminhoUploadCompleto());
-				
-				doc.update();
-			}
-		}
-		
-		CenajurUtil.addInfoMessage("Andamento cadastrado com sucesso");
-		this.initAndamentoProcesso();
-		getCrudModel().setAndamentos(this.andamentoProcesso.findByModel("descricao"));
-		return null;
-	}
-	
-	public String removerAndamentoProcesso() throws TSApplicationException{
-		getCrudModel().getAndamentos().remove(this.andamentoProcessoSelecionado);
-		getCrudModel().update();
-		CenajurUtil.addInfoMessage("Andamento removido com sucesso");
-		return null;
-	}
-	
-	public String alterarAndamentoProcesso() throws TSApplicationException{
-		
-		if(validaCampos()){
-			return null;
-		}
-		
-		this.andamentoProcesso.setDataAtualizacao(new Date());
-		this.andamentoProcesso.setColaboradorAtualizacao(ColaboradorUtil.obterColaboradorConectado());
-		this.andamentoProcesso.update();
-		
-		for(DocumentoAndamentoProcesso doc : this.andamentoProcesso.getDocumentos()){
-			
-			if(!TSUtil.isEmpty(doc.getDocumento())){
-				
-				DocumentoAndamentoProcesso documento = doc.getByModel();
-				
-				doc.setId(documento.getId());
-				doc.setArquivo(doc.getId() + TSFile.obterExtensaoArquivo(doc.getArquivo()));
-				CenajurUtil.criaArquivo(doc.getDocumento(), doc.getCaminhoUploadCompleto());
-				
-				doc.update();
-			}
-		}
-		
-		this.initAndamentoProcesso();
-		getCrudModel().setAndamentos(this.andamentoProcesso.findByModel("descricao"));
-		CenajurUtil.addInfoMessage("Alteração realizada com sucesso");
+	public String abrirDialogAndamento(){
+		this.andamentoProcesso = this.andamentoProcesso.getById();
+		this.processoNumeroPrincipal = this.processoNumeroPrincipal.getById();
+		this.crudModel = this.crudModel.getById();
 		return null;
 	}
 	

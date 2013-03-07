@@ -47,15 +47,15 @@ public class CenajurFilter implements Filter {
 
 	    if((pasta.equals("pages")) && (!pagina.contains("login.xhtml"))) {
 	      
-	    	if (TSUtil.isEmpty(request.getSession().getAttribute("colaboradorConectado"))) {
+	    	if (TSUtil.isEmpty(request.getSession().getAttribute("clienteConectado"))) {
 	    		response.sendRedirect(request.getContextPath() + "/pages/login.xhtml");
 	    	}
 	    	
-	    } else if ((pagina.contains("login.xhtml")) && (!TSUtil.isEmpty(request.getSession().getAttribute("colaboradorConectado")))) {
+	    } else if ((pagina.contains("login.xhtml")) && (!TSUtil.isEmpty(request.getSession().getAttribute("clienteConectado")))) {
 	    	
 	    	request.getSession().removeAttribute("autenticacaoFaces");
 
-	    	request.getSession().removeAttribute("colaboradorConectado");
+	    	request.getSession().removeAttribute("clienteConectado");
 	    	
 	    }
 

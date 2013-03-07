@@ -12,9 +12,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.Transient;
-
-import org.primefaces.model.UploadedFile;
 
 import br.com.cenajur.util.CenajurUtil;
 import br.com.cenajur.util.Constantes;
@@ -24,6 +21,11 @@ import br.com.topsys.util.TSUtil;
 @Entity
 @Table(name = "documentos_audiencias")
 public class DocumentoAudiencia extends TSActiveRecordAb<DocumentoAudiencia>{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4945332863075887407L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator="documentos_audiencias_id")
@@ -43,9 +45,6 @@ public class DocumentoAudiencia extends TSActiveRecordAb<DocumentoAudiencia>{
 	@ManyToOne
 	@JoinColumn(name = "categoria_documento_id")
 	private CategoriaDocumento categoriaDocumento;
-	
-	@Transient
-	private UploadedFile documento;
 	
 	@Column(name = "flag_permissao_cliente")
 	private Boolean flagPermissaoCliente;
@@ -96,14 +95,6 @@ public class DocumentoAudiencia extends TSActiveRecordAb<DocumentoAudiencia>{
 
 	public void setCategoriaDocumento(CategoriaDocumento categoriaDocumento) {
 		this.categoriaDocumento = categoriaDocumento;
-	}
-
-	public UploadedFile getDocumento() {
-		return documento;
-	}
-
-	public void setDocumento(UploadedFile documento) {
-		this.documento = documento;
 	}
 
 	public Boolean getFlagPermissaoCliente() {
@@ -158,11 +149,6 @@ public class DocumentoAudiencia extends TSActiveRecordAb<DocumentoAudiencia>{
 			if (other.descricao != null)
 				return false;
 		} else if (!descricao.equals(other.descricao))
-			return false;
-		if (documento == null) {
-			if (other.documento != null)
-				return false;
-		} else if (!documento.equals(other.documento))
 			return false;
 		if (id == null) {
 			if (other.id != null)

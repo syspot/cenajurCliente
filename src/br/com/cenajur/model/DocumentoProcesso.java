@@ -12,9 +12,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.Transient;
-
-import org.primefaces.model.UploadedFile;
 
 import br.com.cenajur.util.CenajurUtil;
 import br.com.cenajur.util.Constantes;
@@ -48,9 +45,6 @@ public class DocumentoProcesso extends TSActiveRecordAb<DocumentoProcesso>{
 	@ManyToOne
 	@JoinColumn(name = "categoria_documento_id")
 	private CategoriaDocumento categoriaDocumento;
-	
-	@Transient
-	private UploadedFile documento;
 	
 	@Column(name = "flag_permissao_cliente")
 	private Boolean flagPermissaoCliente;
@@ -103,14 +97,6 @@ public class DocumentoProcesso extends TSActiveRecordAb<DocumentoProcesso>{
 		this.categoriaDocumento = categoriaDocumento;
 	}
 	
-	public UploadedFile getDocumento() {
-		return documento;
-	}
-
-	public void setDocumento(UploadedFile documento) {
-		this.documento = documento;
-	}
-
 	public Boolean getFlagPermissaoCliente() {
 		return flagPermissaoCliente;
 	}
@@ -158,11 +144,6 @@ public class DocumentoProcesso extends TSActiveRecordAb<DocumentoProcesso>{
 			if (other.descricao != null)
 				return false;
 		} else if (!descricao.equals(other.descricao))
-			return false;
-		if (documento == null) {
-			if (other.documento != null)
-				return false;
-		} else if (!documento.equals(other.documento))
 			return false;
 		if (id == null) {
 			if (other.id != null)

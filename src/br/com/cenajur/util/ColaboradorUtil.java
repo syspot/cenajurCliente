@@ -56,16 +56,4 @@ public class ColaboradorUtil {
     
     }
 
-    public static Colaborador autenticar(Colaborador model) {
-    	
-    	Colaborador colaboradorModel = model.autenticarPorLogin();
-
-        if ((!TSUtil.isEmpty(colaboradorModel)) && (!colaboradorModel.getSenha().equals(Utilitarios.gerarHash(model.getSenha())))) {
-        	colaboradorModel = null;
-        }
-
-        return colaboradorModel;
-            
-    }
-    
 }

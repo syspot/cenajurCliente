@@ -7,6 +7,7 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -17,6 +18,8 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
@@ -55,7 +58,8 @@ public class Audiencia extends TSActiveRecordAb<Audiencia>{
 	@ManyToOne
 	private Vara vara;
 	
-	@OneToMany(mappedBy = "audiencia", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "audiencia", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+	@Fetch(value = FetchMode.SUBSELECT)
 	private List<AudienciaAdvogado> audienciasAdvogados;
 	
 	private String descricao;
@@ -69,6 +73,7 @@ public class Audiencia extends TSActiveRecordAb<Audiencia>{
 	
 	@OneToMany(mappedBy = "audiencia", cascade = CascadeType.ALL, orphanRemoval = true)
 	@LazyCollection(LazyCollectionOption.FALSE)
+	@org.hibernate.annotations.Where(clause = "flag_permissao_cliente")
 	private List<DocumentoAudiencia> documentos;
 	
 	@Column(name = "flag_cliente_ciente")
@@ -77,9 +82,6 @@ public class Audiencia extends TSActiveRecordAb<Audiencia>{
 	@Transient
 	private Colaborador advogado;
 	
-	@ManyToOne
-	private Agenda agenda;
-
 	public Long getId() {
 		return TSUtil.tratarLong(id);
 	}
@@ -188,14 +190,6 @@ public class Audiencia extends TSActiveRecordAb<Audiencia>{
 		this.advogado = advogado;
 	}
 
-	public Agenda getAgenda() {
-		return agenda;
-	}
-
-	public void setAgenda(Agenda agenda) {
-		this.agenda = agenda;
-	}
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -222,7 +216,7 @@ public class Audiencia extends TSActiveRecordAb<Audiencia>{
 	}
 	
 	public List<Audiencia> findByProcesso(Processo processo){
-		return super.find("from Audiencia a where a.processoNumero.processo.id = ?",null,processo.getId());
+		return super.find("from Audiencia a where a.processoNumero.processo.id = ?", "a.dataAudiencia" ,processo.getId());
 	}
 	
 	@Override
@@ -285,7 +279,4 @@ public class Audiencia extends TSActiveRecordAb<Audiencia>{
 		return super.find(query.toString(), "a.dataAudiencia", params.toArray());
 	}
 	
-	public Audiencia obterPorAgenda(Agenda agenda){
-		return super.get(" select a from Audiencia a left outer join fetch a.documentos d where a.agenda.id = ? ", agenda.getId());
-	}
 }

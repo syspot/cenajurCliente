@@ -1,13 +1,9 @@
 package br.com.cenajur.faces;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.faces.model.SelectItem;
-
-import org.primefaces.context.RequestContext;
-import org.primefaces.event.FileUploadEvent;
 
 import br.com.cenajur.model.AgendaColaborador;
 import br.com.cenajur.model.Audiencia;
@@ -20,11 +16,7 @@ import br.com.cenajur.model.ProcessoNumero;
 import br.com.cenajur.model.SituacaoAudiencia;
 import br.com.cenajur.model.TipoCategoria;
 import br.com.cenajur.model.Vara;
-import br.com.cenajur.util.CenajurUtil;
-import br.com.cenajur.util.ColaboradorUtil;
 import br.com.cenajur.util.Constantes;
-import br.com.topsys.exception.TSApplicationException;
-import br.com.topsys.file.TSFile;
 import br.com.topsys.util.TSUtil;
 import br.com.topsys.web.util.TSFacesUtil;
 
@@ -47,6 +39,7 @@ public class ProcessoAudienciaUtil {
 	private AgendaColaborador agendaColaboradorAux;
 	
 	public ProcessoAudienciaUtil() {
+		this.crudModel = new Processo();
 		setCategoriaDocumento(new CategoriaDocumento());
 		getCategoriaDocumento().setTipoCategoria(new TipoCategoria(Constantes.TIPO_CATEGORIA_AUDIENCA));
 		setDocumentoAudiencia(new DocumentoAudiencia());
@@ -67,6 +60,9 @@ public class ProcessoAudienciaUtil {
 		this.audiencia.setDocumentos(new ArrayList<DocumentoAudiencia>());
 		this.audiencia.setAudienciasAdvogados(new ArrayList<AudienciaAdvogado>());
 		this.processoNumeroPrincipal = this.processoNumeroBackup;
+		if(TSUtil.isEmpty(processoNumeroPrincipal)){
+			processoNumeroPrincipal = new ProcessoNumero();
+		}
 	}
 	
 	private void initCombo(){
@@ -78,147 +74,11 @@ public class ProcessoAudienciaUtil {
 		return null;
 	}
 
-	public void enviarDocumento(FileUploadEvent event) {
-		getDocumentoAudiencia().setDocumento(event.getFile());
-		getDocumentoAudiencia().setArquivo(CenajurUtil.obterNomeTemporarioArquivo(event.getFile()));
-		
-		if(CenajurUtil.isDocumentoPdf(event.getFile())){
-			getDocumentoAudiencia().setDescricaoBusca(CenajurUtil.getDescricaoPDF(event.getFile()));
-		}
-		
-	}
-	
-	public String addDocumento(){
-		
-		RequestContext context = RequestContext.getCurrentInstance();
-		
-		if(TSUtil.isEmpty(getDocumentoAudiencia().getDocumento())){
-			CenajurUtil.addErrorMessage("Documento: Campo obrigatório");
-			context.addCallbackParam("sucesso", false);
-			return null;
-		}
-		
-		if(getDocumentoAudiencia().getDescricao().length() > 100){
-			CenajurUtil.addErrorMessage("Descrição: Campo muito longo, tamanho máximo de 100 caracteres");
-			context.addCallbackParam("sucesso", false);
-			return null;
-		}
-		
-		context.addCallbackParam("sucesso", true);
-		
-		getDocumentoAudiencia().setAudiencia(this.audiencia);
-		getDocumentoAudiencia().setCategoriaDocumento(getCategoriaDocumento().getById());
-		getAudiencia().getDocumentos().add(getDocumentoAudiencia());
-		getCategoriaDocumento().setId(null);
-		setDocumentoAudiencia(new DocumentoAudiencia());
+	public String abrirDialogAudiencia(){
+		this.audiencia = this.audiencia.getById();
+		this.processoNumeroPrincipal = this.processoNumeroPrincipal.getById();
+		this.crudModel = this.crudModel.getById();
 		return null;
-	}
-	
-	public String removerDocumentoAudiencia(){
-		this.audiencia.getDocumentos().remove(this.documentoAudienciaSelecionado);
-		return null;
-	}
-	
-	private boolean validaCampos(){
-		
-		boolean erro = false;
-		
-		if(TSUtil.isEmpty(this.audiencia.getAudienciasAdvogados())){
-			erro = true;
-			CenajurUtil.addErrorMessage("Advogado: Campo obrigatório");
-		}
-
-		if(this.audiencia.getDescricao().length() > 500){
-			erro = true;
-			CenajurUtil.addErrorMessage("Descrição: Campo muito longo, tamanho máximo de 500 caracteres");
-		}
-		
-		return erro;
-	}
-	
-	public String cadastrarAudiencia() throws TSApplicationException{
-		
-		if(validaCampos()){
-			return null;
-		}
-		
-		this.audiencia.setProcessoNumero(processoNumeroPrincipal);
-		this.audiencia.setVara(this.audiencia.getVara().getById());
-		this.audiencia.setDataAtualizacao(new Date());
-		this.audiencia.setColaboradorAtualizacao(ColaboradorUtil.obterColaboradorConectado());
-		this.audiencia.setDataCadastro(new Date());
-		this.audiencia.save();
-
-		for(DocumentoAudiencia doc : this.audiencia.getDocumentos()){
-			
-			if(!TSUtil.isEmpty(doc.getDocumento())){
-				
-				doc.setArquivo(doc.getId() + TSFile.obterExtensaoArquivo(doc.getArquivo()));
-				CenajurUtil.criaArquivo(doc.getDocumento(), doc.getCaminhoUploadCompleto());
-				
-				doc.update();
-			}
-		}
-		
-		CenajurUtil.addInfoMessage("Audiência cadastrada com sucesso");
-		this.initAudiencia();
-		getCrudModel().setAudiencias(this.audiencia.findByModel("descricao"));
-		return null;
-	}
-	
-	public String removerAudiencia() throws TSApplicationException{
-		getCrudModel().getAudiencias().remove(this.audienciaSelecionada);
-		getCrudModel().update();
-		CenajurUtil.addInfoMessage("Audiência removida com sucesso");
-		return null;
-	}
-	
-	public String alterarAudiencia() throws TSApplicationException{
-		
-		if(validaCampos()){
-			return null;
-		}
-		
-		this.audiencia.setDataAtualizacao(new Date());
-		this.audiencia.setColaboradorAtualizacao(ColaboradorUtil.obterColaboradorConectado());
-		this.audiencia.update();
-		
-		for(DocumentoAudiencia doc : this.audiencia.getDocumentos()){
-			
-			if(!TSUtil.isEmpty(doc.getDocumento())){
-				
-				DocumentoAudiencia documento = doc.getByModel();
-				
-				doc.setId(documento.getId());
-				doc.setArquivo(doc.getId() + TSFile.obterExtensaoArquivo(doc.getArquivo()));
-				CenajurUtil.criaArquivo(doc.getDocumento(), doc.getCaminhoUploadCompleto());
-				
-				doc.update();
-			}
-			
-		}
-		
-		this.initAudiencia();
-		getCrudModel().setAudiencias(this.audiencia.findByModel("descricao"));
-		CenajurUtil.addInfoMessage("Alteração realizada com sucesso");
-		return null;
-	}
-	
-	public String addAdvogado(){
-		
-		AudienciaAdvogado audienciaAdvogado = new AudienciaAdvogado();
-		audienciaAdvogado.setAudiencia(this.audiencia);
-		audienciaAdvogado.setAdvogado(this.advogadoSelecionado);
-		
-		if(!this.audiencia.getAudienciasAdvogados().contains(audienciaAdvogado)){
-			this.audiencia.getAudienciasAdvogados().add(audienciaAdvogado);
-			CenajurUtil.addInfoMessage("Advogado adicionado com sucesso");
-		} else{
-			CenajurUtil.addErrorMessage("Esse Advogado já foi adicionado");
-		}
-		
-		return null;
-		
 	}
 	
 	public String obterAudiencia(){

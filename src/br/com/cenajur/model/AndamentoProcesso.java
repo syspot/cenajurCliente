@@ -56,6 +56,7 @@ public class AndamentoProcesso extends TSActiveRecordAb<AndamentoProcesso>{
 	
 	@OneToMany(mappedBy = "andamentoProcesso", cascade = CascadeType.ALL, orphanRemoval = true)
 	@LazyCollection(LazyCollectionOption.FALSE)
+	@org.hibernate.annotations.Where(clause = "flag_permissao_cliente")
 	private List<DocumentoAndamentoProcesso> documentos;
 
 	@Column(name = "data_atualizacao")
@@ -64,6 +65,17 @@ public class AndamentoProcesso extends TSActiveRecordAb<AndamentoProcesso>{
 	@ManyToOne
 	@JoinColumn(name = "colaborador_atualizacao_id")
 	private Colaborador colaboradorAtualizacao;
+	
+	public AndamentoProcesso() {
+	}
+	
+	public AndamentoProcesso(Long id, String descricao, String descricaoTipoAndamento, Date dataAndamento) {
+		this.id = id;
+		this.descricao = descricao;
+		this.tipoAndamentoProcesso = new TipoAndamentoProcesso();
+		this.tipoAndamentoProcesso.setDescricao(descricaoTipoAndamento);
+		this.dataAndamento = dataAndamento;
+	}
 	
 	public Long getId() {
 		return TSUtil.tratarLong(id);
@@ -167,7 +179,7 @@ public class AndamentoProcesso extends TSActiveRecordAb<AndamentoProcesso>{
 	}
 	
 	public List<AndamentoProcesso> findByProcesso(Processo processo){
-		return super.find("from AndamentoProcesso a where a.processoNumero.processo.id = ?",null,processo.getId());
+		return super.find("from AndamentoProcesso a where a.processoNumero.processo.id = ?", "a.dataAndamento" ,processo.getId());
 	}
 	
 	@Override
@@ -175,10 +187,10 @@ public class AndamentoProcesso extends TSActiveRecordAb<AndamentoProcesso>{
 		
 		StringBuilder query = new StringBuilder();
 		
-		query.append(" select distinct a from AndamentoProcesso a inner join a.processoNumero pn where 1 = 1 ");
+		query.append(" select new AndamentoProcesso(a.id, a.descricao, a.tipoAndamentoProcesso.descricao, a.dataAndamento) from AndamentoProcesso a  where 1 = 1 ");
 		
 		if(!TSUtil.isEmpty(processoNumero) && !TSUtil.isEmpty(processoNumero.getNumero())){
-			query.append(CenajurUtil.getParamSemAcento("pn.numero"));
+			query.append(CenajurUtil.getParamSemAcento("a.processoNumero.numero"));
 		}
 		
 		if(!TSUtil.isEmpty(dataAndamento)){
@@ -216,5 +228,9 @@ public class AndamentoProcesso extends TSActiveRecordAb<AndamentoProcesso>{
 		}
 		
 		return super.find(query.toString(), "a.dataAndamento", params.toArray());
+	}
+	
+	public List<AndamentoProcesso> pesquisarAndamentoRecente(){
+		return super.find("select ap from AndamentoProcesso ap where date(ap.dataAndamento) = date(current_date() - 1) ", null);
 	}
 }

@@ -44,14 +44,22 @@ public class Constantes {
 	//public static final String PASTA_DOWNLOAD_IMAGEM_TMP = "http://177.70.17.250:8080/imagens/tmp/";
 	
 	public static final String PASTA_ANDAMENTO_PROCESSO = "andamentos_processos\\";
+	//public static final String PASTA_ANDAMENTO_PROCESSO = "andamentos_processos/";
 	public static final String PASTA_PROCESSO = "processos\\";
+	//public static final String PASTA_PROCESSO = "processos/";
 	public static final String PASTA_AUDIENCIA = "audiencias\\";
-	public static final String PASTA_GERAL = "geral\\";
+	//public static final String PASTA_AUDIENCIA = "audiencias/";
+	public static final String PASTA_GERAL = "geral/";
+	//public static final String PASTA_GERAL = "geral/";
 	public static final String PASTA_CLIENTE = "clientes\\";
+	//public static final String PASTA_CLIENTE = "clientes/";
+	
+	public static final String PASTA_RELATORIOS = "E:\\sub_relatorios\\";
+	//public static final String PASTA_RELATORIOS = "/sub_relatorios/";
 	
 	public static final String DOC_TEMP = "doc_temp";
 	public static final String FOTO_CAM_TEMP = "_foto_cam.jpg";
 	
-	public static final Long PERMISSAO_MENSAGENS = 18L;
+	public static final Long PERMISSAO_CLIENTE = 12L;
 	
 }

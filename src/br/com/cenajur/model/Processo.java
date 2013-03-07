@@ -18,7 +18,6 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import br.com.cenajur.util.CenajurUtil;
 import br.com.cenajur.util.Constantes;
 import br.com.topsys.database.hibernate.TSActiveRecordAb;
 import br.com.topsys.util.TSUtil;
@@ -91,7 +90,7 @@ public class Processo extends TSActiveRecordAb<Processo>{
 	@ManyToOne
 	private Processo processo;
 	
-	private String observacao;
+	private String observacoes;
 	
 	@Column(name = "data_atualizacao")
 	private Date dataAtualizacao;
@@ -101,6 +100,7 @@ public class Processo extends TSActiveRecordAb<Processo>{
 	private Colaborador colaboradorAtualizacao;
 	
 	@OneToMany(mappedBy = "processo", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+	@org.hibernate.annotations.Where(clause = "flag_permissao_cliente")
 	private List<DocumentoProcesso> documentos;
 	
 	@ManyToOne
@@ -114,6 +114,12 @@ public class Processo extends TSActiveRecordAb<Processo>{
 	
 	@Transient
 	private List<ProcessoNumero> processosNumerosTemp;
+	
+	@Transient
+	private Long situacaoProcessoId;
+	
+	@Transient
+	private String ano;
 	
 	public Long getId() {
 		return TSUtil.tratarLong(id);
@@ -239,12 +245,12 @@ public class Processo extends TSActiveRecordAb<Processo>{
 		this.processo = processo;
 	}
 
-	public String getObservacao() {
-		return observacao;
+	public String getObservacoes() {
+		return observacoes;
 	}
 
-	public void setObservacao(String observacao) {
-		this.observacao = observacao;
+	public void setObservacoes(String observacoes) {
+		this.observacoes = observacoes;
 	}
 
 	public void setId(Long id) {
@@ -322,7 +328,23 @@ public class Processo extends TSActiveRecordAb<Processo>{
 	public void setProcessosNumerosTemp(List<ProcessoNumero> processosNumerosTemp) {
 		this.processosNumerosTemp = processosNumerosTemp;
 	}
-	
+
+	public Long getSituacaoProcessoId() {
+		return situacaoProcessoId;
+	}
+
+	public void setSituacaoProcessoId(Long situacaoProcessoId) {
+		this.situacaoProcessoId = situacaoProcessoId;
+	}
+
+	public String getAno() {
+		return ano;
+	}
+
+	public void setAno(String ano) {
+		this.ano = ano;
+	}
+
 	public boolean isProcessoUnico(){
 		return (TSUtil.isEmpty(getProcessosNumeros()) || getProcessosNumeros().size() < 2);
 	}
@@ -352,118 +374,15 @@ public class Processo extends TSActiveRecordAb<Processo>{
 		return true;
 	}
 	
-	@Override
-	public List<Processo> findByModel(String... fieldsOrderBy) {
+	public List<Processo> pesquisarPorCliente(Cliente cliente) {
 		
 		StringBuilder query = new StringBuilder();
 		
-		query.append(" select distinct p from Processo p left outer join fetch p.processosNumeros pn where 1 = 1 ");
-		
-		if(!TSUtil.isEmpty(processoNumeroPrincipal) && !TSUtil.isEmpty(processoNumeroPrincipal.getNumero())){
-			query.append(CenajurUtil.formataNumeroProcessoBusca("pn.numero"));
-		}
-		
-		if(!TSUtil.isEmpty(dataAbertura)){
-			query.append(" and date(p.dataAbertura) = date(?) ");
-		}
-		
-		if(!TSUtil.isEmpty(dataAjuizamento)){
-			query.append(" and date(p.dataAjuizamento) = date(?) ");
-		}
-		
-		if(!TSUtil.isEmpty(tipoProcesso) && !TSUtil.isEmpty(tipoProcesso.getId())){
-			query.append(" and p.tipoProcesso.id = ? ");
-		}
-		
-		if(!TSUtil.isEmpty(tipoParte) && !TSUtil.isEmpty(tipoParte.getId())){
-			query.append(" and p.tipoParte.id = ? ");
-		}
-		
-		if(!TSUtil.isEmpty(advogado) && !TSUtil.isEmpty(advogado.getId())){
-			query.append(" and p.advogado.id = ? ");
-		}
-		
-		if(!TSUtil.isEmpty(objeto) && !TSUtil.isEmpty(objeto.getId())){
-			query.append(" and p.objeto.id = ? ");
-		}
-		
-		if(!TSUtil.isEmpty(comarca) && !TSUtil.isEmpty(comarca.getId())){
-			query.append(" and p.comarca.id = ? ");
-		}
-		
-		if(!TSUtil.isEmpty(vara) && !TSUtil.isEmpty(vara.getId())){
-			query.append(" and p.vara.id = ? ");
-		}
-		
-		if(!TSUtil.isEmpty(situacaoProcesso) && !TSUtil.isEmpty(situacaoProcesso.getId())){
-			query.append(" and p.situacaoProcesso.id = ? ");
-		}
-		
-		if(!TSUtil.isEmpty(turno) && !TSUtil.isEmpty(turno.getId())){
-			query.append(" and p.turno.id = ? ");
-		}
-		
-		if(!TSUtil.isEmpty(dataArquivamento)){
-			query.append(" and date(p.dataArquivamento) = date(?) ");
-		}
-		
-		if(!TSUtil.isEmpty(getLote())){
-			query.append(" and p.lote = ? ");
-		}
+		query.append(" select distinct p from Processo p left outer join fetch p.processosNumeros pn inner join p.processosClientes pc  where 1 = 1 and pc.cliente.id = ?");
 		
 		List<Object> params = new ArrayList<Object>();
 		
-		if(!TSUtil.isEmpty(processoNumeroPrincipal) && !TSUtil.isEmpty(processoNumeroPrincipal.getNumero())){
-			params.add(CenajurUtil.tratarString(processoNumeroPrincipal.getNumero()));
-		}
-		
-		if(!TSUtil.isEmpty(dataAbertura)){
-			params.add(dataAbertura);
-		}
-		
-		if(!TSUtil.isEmpty(dataAjuizamento)){
-			params.add(dataAjuizamento);
-		}
-		
-		if(!TSUtil.isEmpty(tipoProcesso) && !TSUtil.isEmpty(tipoProcesso.getId())){
-			params.add(tipoProcesso.getId());
-		}
-		
-		if(!TSUtil.isEmpty(tipoParte) && !TSUtil.isEmpty(tipoParte.getId())){
-			params.add(tipoParte.getId());
-		}
-		
-		if(!TSUtil.isEmpty(advogado) && !TSUtil.isEmpty(advogado.getId())){
-			params.add(advogado.getId());
-		}
-		
-		if(!TSUtil.isEmpty(objeto) && !TSUtil.isEmpty(objeto.getId())){
-			params.add(objeto.getId());
-		}
-		
-		if(!TSUtil.isEmpty(comarca) && !TSUtil.isEmpty(comarca.getId())){
-			params.add(comarca.getId());
-		}
-		
-		if(!TSUtil.isEmpty(vara) && !TSUtil.isEmpty(vara.getId())){
-			params.add(vara.getId());
-		}
-		
-		if(!TSUtil.isEmpty(situacaoProcesso) && !TSUtil.isEmpty(situacaoProcesso.getId())){
-			params.add(situacaoProcesso.getId());
-		}
-		
-		if(!TSUtil.isEmpty(turno) && !TSUtil.isEmpty(turno.getId())){
-			params.add(turno.getId());
-		}
-		
-		if(!TSUtil.isEmpty(dataArquivamento)){
-			params.add(dataArquivamento);
-		}
-		
-		if(!TSUtil.isEmpty(getLote())){
-			params.add(getLote());
-		}
+		params.add(cliente.getId());
 		
 		return super.find(query.toString(), "p.situacaoProcesso, p.tipoProcesso", params.toArray());
 	}
@@ -471,4 +390,5 @@ public class Processo extends TSActiveRecordAb<Processo>{
 	public boolean isProcessoArquivado(){
 		return Constantes.SITUACAO_PROCESSO_ARQUIVADO.equals(situacaoProcesso.getId());
 	}
+
 }

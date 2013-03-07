@@ -139,6 +139,7 @@ public class Cliente extends TSActiveRecordAb<Cliente>{
 	private List<Processo> processos;
 	
 	@OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
+	@org.hibernate.annotations.Where(clause = "flag_permissao_cliente")
 	private List<DocumentoCliente> documentos;
 	
 	@Column(name = "flag_associado")
@@ -150,11 +151,34 @@ public class Cliente extends TSActiveRecordAb<Cliente>{
 	@Column(name = "dia_vencimento")
 	private Integer diaVencimento;
 	
-	@Transient
-	private byte[] bytesImagem;
+	private String observacoes;
+	
+	private String senha;
+	
+	@Column(name = "flag_rematricula")
+	private Boolean flagRematricula;
 	
 	@Transient
 	private String caminhoImagem;
+	
+	@Transient
+	private String faturasAbertas;
+	
+	@Transient
+	private List<Agenda> visitas;
+	
+	public Cliente() {
+	}
+	
+	public Cliente(Long id, String nome) {
+		super();
+		this.id = id;
+		this.nome = nome;
+	}
+
+	public Cliente(Long id) {
+		this.id = id;
+	}
 	
 	public Long getId() {
 		return TSUtil.tratarLong(id);
@@ -468,14 +492,6 @@ public class Cliente extends TSActiveRecordAb<Cliente>{
 		this.flagAssociado = flagAssociado;
 	}
 
-	public byte[] getBytesImagem() {
-		return bytesImagem;
-	}
-
-	public void setBytesImagem(byte[] bytesImagem) {
-		this.bytesImagem = bytesImagem;
-	}
-
 	public String getCaminhoImagem() {
 		return caminhoImagem;
 	}
@@ -500,13 +516,61 @@ public class Cliente extends TSActiveRecordAb<Cliente>{
 		this.diaVencimento = diaVencimento;
 	}
 
+	public String getSenha() {
+		return senha;
+	}
+
+	public void setSenha(String senha) {
+		this.senha = senha;
+	}
+
+	public String getObservacoes() {
+		return observacoes;
+	}
+
+	public Boolean getFlagRematricula() {
+		return flagRematricula;
+	}
+
+	public void setFlagRematricula(Boolean flagRematricula) {
+		this.flagRematricula = flagRematricula;
+	}
+
+	public void setObservacoes(String observacoes) {
+		this.observacoes = observacoes;
+	}
+
 	public String getTipo(){
 		return getFlagAssociado() ? "Associado" : "Dependente";
+	}
+	
+	public String getSituacao(){
+		return getFlagAtivo() ? "Ativo" : "Cancelado";
+	}
+	
+	public String getCss(){
+		return getFlagAtivo() ? "situacaoAtiva" : "situacaoCancelada";
 	}
 	
 	@Override
 	public String toString() {
 		return this.nome;
+	}
+
+	public String getFaturasAbertas() {
+		return faturasAbertas;
+	}
+
+	public void setFaturasAbertas(String faturasAbertas) {
+		this.faturasAbertas = faturasAbertas;
+	}
+
+	public List<Agenda> getVisitas() {
+		return visitas;
+	}
+
+	public void setVisitas(List<Agenda> visitas) {
+		this.visitas = visitas;
 	}
 
 	@Override
@@ -539,7 +603,7 @@ public class Cliente extends TSActiveRecordAb<Cliente>{
 		StringBuilder query = new StringBuilder();
 		
 		if(!TSUtil.isEmpty(matricula)){
-			query.append(" and ").append(CenajurUtil.semAcento("c.matricula")).append(" like ").append(CenajurUtil.semAcento("?")).append(" ");
+			query.append(" and c.matricula = ? ");
 		}
 		
 		if(!TSUtil.isEmpty(nome)){
@@ -554,6 +618,10 @@ public class Cliente extends TSActiveRecordAb<Cliente>{
 			query.append(" and c.cidade.id = ? ");
 		}
 		
+		if(!TSUtil.isEmpty(lotacao) && !TSUtil.isEmpty(lotacao.getId())){
+			query.append(" and c.lotacao.id = ? ");
+		}
+		
 		if(!TSUtil.isEmpty(flagAtivo)){
 			query.append(" and c.flagAtivo = ? ");
 		}
@@ -566,7 +634,7 @@ public class Cliente extends TSActiveRecordAb<Cliente>{
 		List<Object> params = new ArrayList<Object>();
 		
 		if(!TSUtil.isEmpty(matricula)){
-			params.add(CenajurUtil.tratarString(matricula));
+			params.add(matricula);
 		}
 		
 		if(!TSUtil.isEmpty(nome)){
@@ -579,6 +647,10 @@ public class Cliente extends TSActiveRecordAb<Cliente>{
 		
 		if(!TSUtil.isEmpty(cidade) && !TSUtil.isEmpty(cidade.getId())){
 			params.add(cidade.getId());
+		}
+		
+		if(!TSUtil.isEmpty(lotacao) && !TSUtil.isEmpty(lotacao.getId())){
+			params.add(lotacao.getId());
 		}
 
 		if(!TSUtil.isEmpty(flagAtivo)){
@@ -631,6 +703,30 @@ public class Cliente extends TSActiveRecordAb<Cliente>{
 		
 		return super.find(query.toString(), "nome", this.obterCondicionalParans().toArray());
 		
+	}
+	
+	public Cliente obterPorCPF(){
+		return super.get(" from Cliente where cpf = ?", cpf);
+	}
+	
+	public List<Cliente> pesquisarNovosAssociados(){
+		return super.find("select c from Cliente c where date(c.dataAdesao) = date(current_date() - 1) and c.flagAtivo = true and c.flagAssociado = true ", null);
+	}
+	
+	public List<Cliente> pesquisarAniversariantes(){
+		return super.find("select c from Cliente c where to_char(c.dataNascimento, 'dd/mm') = to_char(current_date(), 'dd/mm') and c.flagAtivo = true and c.flagAssociado = true", null);
+	}
+	
+	public List<Cliente> pesquisarInadimplentes(Integer mes, Integer ano){
+		return super.find("select f.cliente from Faturamento f where f.flagPago = false and f.flagCancelado = false and f.mes <= ? and f.ano <= ? ", null, mes, ano);
+	}
+	
+	public List<Cliente> pesquisarInadimplentes(){
+		return super.find("select distinct f.cliente from Faturamento f where f.flagPago = false and f.flagCancelado = false ", null);
+	}
+	
+	public Cliente autenticarPorEmail() {
+		return super.get(" from Cliente c where c.email = ? ", email);
 	}
 	
 }

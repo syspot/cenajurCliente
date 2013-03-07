@@ -17,8 +17,6 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.util.PDFTextStripper;
 import org.primefaces.model.UploadedFile;
 
-import br.com.cenajur.model.Agenda;
-import br.com.cenajur.model.AgendaColaborador;
 import br.com.topsys.exception.TSApplicationException;
 import br.com.topsys.exception.TSSystemException;
 import br.com.topsys.file.TSFile;
@@ -246,69 +244,23 @@ public class CenajurUtil {
 		return c.get(Calendar.YEAR);
 	}
 	
-	
 	public static Integer obterMesAtual(){
 		Calendar c = Calendar.getInstance();
 		return c.get(Calendar.MONTH + 1);
 	}
 	
-	public static String obterDescricaoAgenda(Agenda agenda){
+	public static Integer converterStringInteiro(String string){
 		
-		String texto;
-		
-		if(agenda.getFlagGeral()){
+		try{
 			
-			if(TSUtil.isEmpty(agenda.getAgendasColaboradores())){
+			Integer inteiro = Integer.valueOf(string);
 			
-				texto = "[ TODOS ]";
-				
-			} else{
-				
-				texto = "[ TODOS ] - " + agenda.getAgendasColaboradores().toString();;
-				
-			}
+			return inteiro;
 			
-		} else{
+		} catch(NumberFormatException e){
 			
-			texto = agenda.getAgendasColaboradores().toString();;
-			
+			return null;
 		}
-		
-		return texto;
-
-	}
-	
-	public static String obterCssAgenda(Agenda agenda, AgendaColaborador agendaColaboradorAux){
-		
-		String css;
-		
-		if(agenda.getFlagGeral()){
-			
-			css = agenda.getTipoAgenda().getCss();
-			
-		} else{
-			
-			if (agenda.getAgendasColaboradores().contains(agendaColaboradorAux)) {
-				
-				if (agenda.getAgendasColaboradores().get(agenda.getAgendasColaboradores().indexOf(agendaColaboradorAux)).getFlagConcluido()) {
-					
-					css = "cinza";
-					
-				} else {
-					
-					css = agenda.getTipoAgenda().getCss();
-					
-				}
-				
-			} else {
-				
-				css = "laranja";
-				
-			}   
-			
-		}
-		
-		return css;
 		
 	}
 	

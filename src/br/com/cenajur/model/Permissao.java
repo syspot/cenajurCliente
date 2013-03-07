@@ -1,19 +1,14 @@
 package br.com.cenajur.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import br.com.cenajur.util.CenajurUtil;
 import br.com.topsys.database.hibernate.TSActiveRecordAb;
 import br.com.topsys.util.TSUtil;
 
@@ -45,9 +40,6 @@ public class Permissao extends TSActiveRecordAb<Permissao> {
 	
 	@Column(name = "flag_ativo")
 	private Boolean flagAtivo;
-	
-	@OneToMany(mappedBy="permissao")
-	private List<PermissaoGrupo> permissoesGrupos;
 
 	public Permissao() {
 	}
@@ -112,14 +104,6 @@ public class Permissao extends TSActiveRecordAb<Permissao> {
 		this.flagAtivo = flagAtivo;
 	}
 
-	public List<PermissaoGrupo> getPermissoesGrupos() {
-		return permissoesGrupos;
-	}
-
-	public void setPermissoesGrupos(List<PermissaoGrupo> permissoesGrupos) {
-		this.permissoesGrupos = permissoesGrupos;
-	}
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -145,31 +129,4 @@ public class Permissao extends TSActiveRecordAb<Permissao> {
 		return true;
 	}
 	
-	@Override
-	public List<Permissao> findByModel(String... fieldsOrderBy) {
-		
-		StringBuilder query = new StringBuilder();
-		
-		query.append(" from Permissao p where 1 = 1 ");
-		
-		if(!TSUtil.isEmpty(descricao)){
-			query.append("and lower(p.descricao) like ? ");
-		}
-		
-		if(!TSUtil.isEmpty(menu) && !TSUtil.isEmpty(menu.getId())){
-			query.append("and p.menu.id = ? ");
-		}
-		
-		List<Object> params = new ArrayList<Object>();
-		
-		if(!TSUtil.isEmpty(descricao)){
-			params.add(CenajurUtil.tratarString(descricao));
-		}
-		
-		if(!TSUtil.isEmpty(menu) && !TSUtil.isEmpty(menu.getId())){
-			params.add(menu.getId());
-		}
-		
-		return super.find(query.toString(), "descricao", params.toArray());
-	}
 }
