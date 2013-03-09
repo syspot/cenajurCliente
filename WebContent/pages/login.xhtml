@@ -1,57 +1,53 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:p="http://primefaces.org/ui">
-  
-  <h:head>
-    <title>Cenajur</title>   
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <title>Cenajur</title>
     <link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/css/geral.css" />
-  </h:head>
+</h:head>
 
-  <h:body onload="javascript:document.getElementById('usuario').focus();" >
+<h:body onload="javascript:document.getElementById('usuario').focus();">
 
-    <p:layout fullPage="true" >
+    <p:layout fullPage="true">
 
-      <p:layoutUnit position="north" size="110">
-		<img src="#{request.contextPath}/resources/images/logo.png" width="1280" height="100"/>
-      </p:layoutUnit>
+        <p:layoutUnit position="north" size="110">
+            <img src="#{request.contextPath}/resources/images/logo.png" width="1280" height="100" />
+        </p:layoutUnit>
 
-      <p:layoutUnit position="center" style="margin-top: 8%" >
-        <h:form id="formLogin" prependId="false">
-          <p:growl id="msgLogin" globalOnly="false" showDetail="true" showSummary="false" />
-          <div align="center">
-          	<br/>
-          	<br/>
-            <p:panel id="panelLogin" header="Controle de Acesso" style="width: 280px; text-align: left">
-            
-              <h:panelGrid styleClass="coluna100" columns="2" columnClasses="coluna40,coluna60">
-                <p:outputLabel for="usuario" value="Email:"/>
-                <p:inputText id="usuario" required="true" requiredMessage="Email: Obrigatório" value="#{autenticacaoFaces.cliente.email}" style="width: 97%;" />
-                <p:outputLabel for="senha" value="Senha:"/>
-                <p:password id="senha" required="true" requiredMessage="Senha: Obrigatório" value="#{autenticacaoFaces.cliente.senha}" maxlength="20" style="width: 97%;" />
-              </h:panelGrid>
-              
-              <div align="right">
-                <p:commandButton ajax="false" title="Acessar" value="Acessar" id="btnAcessar" style="text-align: right; height: 40px; width: 110px;" icon="cadeado" action="#{autenticacaoFaces.entrar}" tabindex="4" />
-              </div>
-              
-            </p:panel>
-          </div>
-        </h:form>
-      </p:layoutUnit>
+        <p:layoutUnit position="center" style="margin-top: 8%">
+            <h:form id="formLogin" prependId="false">
+                <p:growl id="msgLogin" globalOnly="false" showDetail="true" showSummary="false" />
+                <div align="center">
+                    <br /> <br />
+                    <p:panel id="panelLogin" header="Controle de Acesso" style="width: 320px; text-align: left">
 
-      <p:layoutUnit position="south" size="35">
-        <h:panelGrid columns="1" width="100%" style="height: 100%" columnClasses="colunaInformativo100">
-          <h:column>
-            <h:outputText value="Cenajur - Gestão da Informação." />
-          </h:column>
-        </h:panelGrid>
-      </p:layoutUnit>
+                        <h:panelGrid styleClass="coluna100" columns="2" columnClasses="coluna30,coluna70">
+                            <p:outputLabel for="usuario" value="Email:" />
+                            <p:inputText id="usuario" required="true" requiredMessage="Email: Obrigatório" value="#{autenticacaoFaces.cliente.email}" style="width: 97%;" />
+                            <p:outputLabel for="senha" value="Senha:" />
+                            <p:password id="senha" required="true" requiredMessage="Senha: Obrigatório" value="#{autenticacaoFaces.cliente.senha}" maxlength="20" style="width: 97%;" />
+                        </h:panelGrid>
+
+                        <div align="right">
+                            <p:commandButton ajax="false" title="Acessar" value="Acessar" id="btnAcessar" style="text-align: right; height: 40px; width: 110px;" icon="cadeado" action="#{autenticacaoFaces.entrar}" tabindex="4" />
+                        </div>
+
+                    </p:panel>
+                </div>
+            </h:form>
+        </p:layoutUnit>
+
+        <p:layoutUnit position="south" size="35">
+            <h:panelGrid columns="1" width="100%" style="height: 100%" columnClasses="colunaInformativo100">
+                <h:column>
+                    <h:outputText value="Cenajur - Gestão da Informação." />
+                </h:column>
+            </h:panelGrid>
+        </p:layoutUnit>
     </p:layout>
 
-  </h:body>
+</h:body>
 
 
 </html>

@@ -19,7 +19,11 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import br.com.cenajur.util.CenajurUtil;
+import br.com.cenajur.util.Utilitarios;
 import br.com.topsys.database.hibernate.TSActiveRecordAb;
 import br.com.topsys.util.TSUtil;
 
@@ -107,7 +111,7 @@ public class Cliente extends TSActiveRecordAb<Cliente>{
 	
 	private String conta;
 	
-	private Integer lote;
+	private String lote;
 	
 	@ManyToOne
 	private Lotacao lotacao;
@@ -139,6 +143,7 @@ public class Cliente extends TSActiveRecordAb<Cliente>{
 	private List<Processo> processos;
 	
 	@OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
+	@Fetch(FetchMode.SUBSELECT)
 	@org.hibernate.annotations.Where(clause = "flag_permissao_cliente")
 	private List<DocumentoCliente> documentos;
 	
@@ -408,11 +413,11 @@ public class Cliente extends TSActiveRecordAb<Cliente>{
 		this.conta = conta;
 	}
 
-	public Integer getLote() {
+	public String getLote() {
 		return lote;
 	}
 
-	public void setLote(Integer lote) {
+	public void setLote(String lote) {
 		this.lote = lote;
 	}
 
@@ -726,7 +731,7 @@ public class Cliente extends TSActiveRecordAb<Cliente>{
 	}
 	
 	public Cliente autenticarPorEmailSenha() {
-		return super.get(" from Cliente c where c.email = ? and senha = ? ", email, senha);
+		return super.get(" from Cliente c where c.email = ? and senha = ? ", email, Utilitarios.gerarHash(senha));
 	}
 	
 }
