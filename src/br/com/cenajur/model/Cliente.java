@@ -725,8 +725,8 @@ public class Cliente extends TSActiveRecordAb<Cliente>{
 		return super.find("select distinct f.cliente from Faturamento f where f.flagPago = false and f.flagCancelado = false ", null);
 	}
 	
-	public Cliente autenticarPorEmail() {
-		return super.get(" from Cliente c where c.email = ? ", email);
+	public Cliente autenticarPorEmailSenha() {
+		return super.get(" from Cliente c where c.email = ? and senha = ? ", email, senha);
 	}
 	
 }

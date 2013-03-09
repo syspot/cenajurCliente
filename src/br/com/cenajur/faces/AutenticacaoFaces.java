@@ -12,7 +12,6 @@ import br.com.cenajur.model.Permissao;
 import br.com.cenajur.util.CenajurUtil;
 import br.com.cenajur.util.ColaboradorUtil;
 import br.com.cenajur.util.Constantes;
-import br.com.cenajur.util.Utilitarios;
 import br.com.topsys.exception.TSApplicationException;
 import br.com.topsys.util.TSUtil;
 import br.com.topsys.web.faces.TSMainFaces;
@@ -58,39 +57,30 @@ public class AutenticacaoFaces extends TSMainFaces{
 
     public String entrar() {
     	
-    	Cliente cliente = this.cliente.autenticarPorEmail();
+    	Cliente cliente = this.cliente.autenticarPorEmailSenha();
     	
     	if(!TSUtil.isEmpty(cliente)){
     		
-    		if(cliente.getSenha().equals(Utilitarios.gerarHash(this.cliente.getSenha()))){
+			this.menusPrime.clear();
+			
+			TSFacesUtil.addObjectInSession("clienteConectado", cliente);
+			
+			Permissao permissao = new Permissao(Constantes.PERMISSAO_CLIENTE).getById();
+			
+			Menu menu = permissao.getMenu();
+			menu.getPermissoes().clear();
+			menu.getPermissoes().add(permissao);
+			
+			this.menusPrime.add(menu);
+			
+			this.tela = permissao.getUrl();
+			this.nomeTela = permissao.getDescricao();
+			
+			return "entrar";
     			
-    			this.menusPrime.clear();
-    			
-    			TSFacesUtil.addObjectInSession("clienteConectado", cliente);
-    			
-    			Permissao permissao = new Permissao(Constantes.PERMISSAO_CLIENTE).getById();
-    			
-    			Menu menu = permissao.getMenu();
-    			menu.getPermissoes().clear();
-    			menu.getPermissoes().add(permissao);
-    			
-    			this.menusPrime.add(menu);
-    			
-    			this.tela = permissao.getUrl();
-    			this.nomeTela = permissao.getDescricao();
-    			
-    			return "entrar";
-    			
-    		} else{
-    			
-    			CenajurUtil.addErrorMessage("Senha não confere");
-    			return "login";
-    			
-    		}
-    		
     	} else{
     		
-    		CenajurUtil.addErrorMessage("Usuário não localizado na base de dados");
+    		CenajurUtil.addErrorMessage("Usuário ou senha não conferem");
 			return "login";
     	}
     }
