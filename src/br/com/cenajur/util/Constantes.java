@@ -8,6 +8,7 @@ public class Constantes {
 	public static final String COLABORADOR_CONECTADO = "colaboradorConectado";
 	
 	public static final Long TIPO_COLABORADOR_ADVOGADO = 2L;
+	public static final Long TIPO_COLABORADOR_ESTAGIARIO = 50L;
 	
 	public static final Long SITUACAO_PROCESSO_ARQUIVADO = 3L;
 	public static final Long SITUACAO_PROCESSO_CLIENTE_ATIVO = 1L;
@@ -61,5 +62,6 @@ public class Constantes {
 	public static final String FOTO_CAM_TEMP = "_foto_cam.jpg";
 	
 	public static final Long PERMISSAO_CLIENTE = 12L;
+	public static final Long EMAIL_ID = 1L;
 	
 }

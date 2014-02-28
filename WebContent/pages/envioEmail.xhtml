@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:h="http://java.sun.com/jsf/html" xmlns:p="http://primefaces.org/ui" xmlns:f="http://java.sun.com/jsf/core">
+
+	<h:form>
+	    <p:tabView id="tabview">
+	
+	        <p:tab title="Email">
+	
+	            <h:panelGrid style="width: 100%">
+	            
+	                <h:outputText value="Descrição" />
+	                <p:inputTextarea value="#{autenticacaoFaces.textoEmail}" required="true" requiredMessage="Descrição: Campo obrigatório" rows="20" autoResize="false" style="width: 98%" />
+	                
+	                <p:commandButton value="Enviar" icon="ui-icon-check" action="#{autenticacaoFaces.enviarEmail}" update="@form" style="margin-top: 10px"/>
+	                
+	            </h:panelGrid>
+	            
+	        </p:tab>
+	        
+	    </p:tabView>
+    </h:form>
+
+</ui:composition>

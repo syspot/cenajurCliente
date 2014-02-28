@@ -4,4 +4,5 @@ encoding//WebContent/pages/menu.xhtml=ISO-8859-1
 encoding//WebContent/resources/templates/templateCRUD.xhtml=ISO-8859-1
 encoding//src/br/com/cenajur/faces/AutenticacaoFaces.java=ISO-8859-1
 encoding//src/br/com/cenajur/faces/ClienteFaces.java=ISO-8859-1
+encoding//src/br/com/cenajur/util/JasperUtil.java=ISO-8859-1
 encoding/<project>=UTF-8

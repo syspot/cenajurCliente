@@ -20,17 +20,45 @@
                 <p:growl id="msgLogin" globalOnly="false" showDetail="true" showSummary="false" />
                 <div align="center">
                     <br /> <br />
-                    <p:panel id="panelLogin" header="Controle de Acesso" style="width: 320px; text-align: left">
+                    <p:panel id="panelLogin" header="Controle de Acesso" style="width: 280px; text-align: left">
 
-                        <h:panelGrid styleClass="coluna100" columns="2" columnClasses="coluna30,coluna70">
-                            <p:outputLabel for="usuario" value="Email:" />
-                            <p:inputText id="usuario" required="true" requiredMessage="Email: Obrigatório" value="#{autenticacaoFaces.cliente.email}" style="width: 97%;" />
-                            <p:outputLabel for="senha" value="Senha:" />
-                            <p:password id="senha" required="true" requiredMessage="Senha: Obrigatório" value="#{autenticacaoFaces.cliente.senha}" maxlength="20" style="width: 97%;" />
-                        </h:panelGrid>
+                        <h:panelGrid styleClass="coluna100" columns="2" columnClasses="coluna40,coluna60" rendered="#{autenticacaoFaces.opcao == 1}">
+			                <p:outputLabel for="usuario" value="Matrícula:"/>
+			                <p:inputText id="usuario" required="true" requiredMessage="Matrícula: Obrigatório" value="#{autenticacaoFaces.cliente.matricula}" style="width: 97%;" />
+			                <p:outputLabel for="senha" value="Senha:"/>
+			                <p:password id="senha" required="true" requiredMessage="Senha: Obrigatório" value="#{autenticacaoFaces.cliente.senha}" maxlength="20" style="width: 97%;" />
+			              </h:panelGrid>
+			              
+			              <h:panelGrid styleClass="coluna100" columns="2" columnClasses="coluna40,coluna60" rendered="#{autenticacaoFaces.opcao == 3}">
+			                <p:outputLabel for="usuarioAlterar" value="Usuário:"/>
+			                <p:inputText id="usuarioAlterar" required="true" requiredMessage="Usuário: Obrigatório" value="#{autenticacaoFaces.cliente.matricula}" style="width: 97%;" />
+			                <p:outputLabel for="senhaAlterarOriginal" value="Senha:"/>
+			                <p:password id="senhaAlterarOriginal" required="true" requiredMessage="Senha: Obrigatório" value="#{autenticacaoFaces.cliente.senha}" maxlength="20" style="width: 97%;" />
+			                <p:outputLabel for="senhaAlterar" value="Nova Senha:"/>
+			                <p:password id="senhaAlterar" required="true" requiredMessage="Nova Senha: Obrigatório" value="#{autenticacaoFaces.cliente.senha2}" match="senhaAlterar2" maxlength="20" style="width: 97%;" />
+			                <p:outputLabel for="senhaAlterar2" value="Repetir Nova Senha:"/>
+			                <p:password id="senhaAlterar2" required="true" requiredMessage="Repetir Nova Senha: Obrigatório"  value="#{autenticacaoFaces.confirmaSenha}" maxlength="20" style="width: 97%;" />
+			              </h:panelGrid>
+			              
+			              <h:panelGrid styleClass="coluna100" columns="2" columnClasses="coluna40,coluna60" rendered="#{autenticacaoFaces.opcao == 2}">
+			                <p:outputLabel for="usuarioEsqueciSenha" value="Usuário:"/>
+			                <p:inputText id="usuarioEsqueciSenha" required="true" requiredMessage="Usuário: Obrigatório" value="#{autenticacaoFaces.cliente.matricula}" style="width: 97%;" />
+			              </h:panelGrid>
+			              
+			              <h:panelGrid styleClass="coluna100" columns="2" columnClasses="coluna40,coluna60">
+				              <p:outputLabel for="opcaoLogin" value="Ação:"/>
+				              <h:selectOneMenu id="opcaoLogin" value="#{autenticacaoFaces.opcao}" styleClass="combo" style="width:100%; margin-bottom:10px">
+				              	<f:selectItem itemLabel="Autenticar" itemValue="1" />
+				              	<f:selectItem itemLabel="Esqueci a senha" itemValue="2" />
+				              	<f:selectItem itemLabel="Alterar senha" itemValue="3" />
+				              	<p:ajax event="change" update="panelLogin" />
+				              </h:selectOneMenu>
+			              </h:panelGrid>
 
                         <div align="right">
-                            <p:commandButton ajax="false" title="Acessar" value="Acessar" id="btnAcessar" style="text-align: right; height: 40px; width: 110px;" icon="cadeado" action="#{autenticacaoFaces.entrar}" tabindex="4" />
+                            <p:commandButton ajax="false" title="Acessar" value="Acessar" id="btnAcessar" style="text-align: right; height: 40px; width: 110px;" icon="cadeado" action="#{autenticacaoFaces.entrar}" tabindex="4" rendered="#{autenticacaoFaces.opcao == 1}"/>
+			                <p:commandButton ajax="false" title="Recuperar Senha" value="Recuperar Senha" id="btnRecuperarSenha" style="text-align: right; height: 40px; width: 150px;" icon="cadeado" action="#{autenticacaoFaces.recuperarSenha}" tabindex="4" rendered="#{autenticacaoFaces.opcao == 2}"/>
+			                <p:commandButton ajax="false" title="Alterar Senha" value="Alterar Senha" id="btnAlterarSenha" style="text-align: right; height: 40px; width: 135px" icon="cadeado" action="#{autenticacaoFaces.alterarSenha}" tabindex="4" rendered="#{autenticacaoFaces.opcao == 3}"/>
                         </div>
 
                     </p:panel>

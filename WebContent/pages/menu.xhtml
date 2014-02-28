@@ -1,17 +1,26 @@
-<ui:fragment xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:h="http://java.sun.com/jsf/html" xmlns:p="http://primefaces.org/ui" xmlns:f="http://java.sun.com/jsf/core" xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:t="http://myfaces.apache.org/tomahawk">
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:t="http://myfaces.apache.org/tomahawk">
 	<h:form>
 
 		<p:accordionPanel id="apMenu" style="width: 100%" activeIndex="0">
 
-			<c:forEach id="feMenuRaiz" items="#{autenticacaoFaces.menusPrime}" var="linha">
-				<p:tab title="#{linha.nome}">
-					<h:panelGrid columns="1">
-						<c:forEach id="feMenuCommand" items="#{linha.permissoes}" var="linha2">
-							<h:outputText ajax="false" styleClass="menuPrincipal" value="#{linha2.descricao}" />
-						</c:forEach>
-					</h:panelGrid>
-				</p:tab>
-			</c:forEach>
+			<p:tab title="Principal">
+				<h:panelGrid columns="1">
+					<p:commandLink ajax="false" styleClass="menuPrincipal" value="Associado" action="#{autenticacaoFaces.redirecionar}">
+						<f:setPropertyActionListener target="#{autenticacaoFaces.tela}" value="/pages/processo/cliente.xhtml" />
+						<f:setPropertyActionListener target="#{autenticacaoFaces.nomeTela}" value="Associado" />
+					</p:commandLink>
+					<p:commandLink ajax="false" styleClass="menuPrincipal" value="Fale Conosco" action="#{autenticacaoFaces.redirecionar}">
+						<f:setPropertyActionListener target="#{autenticacaoFaces.tela}" value="/pages/envioEmail.xhtml" />
+						<f:setPropertyActionListener target="#{autenticacaoFaces.nomeTela}" value="Fale Conosco" />
+					</p:commandLink>
+				</h:panelGrid>
+			</p:tab>
 
 		</p:accordionPanel>
 

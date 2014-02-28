@@ -7,11 +7,19 @@
   </context-param>
   <context-param>
     <param-name>primefaces.THEME</param-name>
-    <param-value>casablanca</param-value>
+    <param-value>smoothness</param-value>
   </context-param>
   <welcome-file-list>
     <welcome-file>/pages/login.xhtml</welcome-file>
   </welcome-file-list>
+  <error-page>
+    <error-code>404</error-code>
+    <location>/pages/404.jsp</location>
+  </error-page>
+  <error-page>
+    <error-code>500</error-code>
+    <location>/pages/500.jsp</location>
+  </error-page>
   <servlet>
     <servlet-name>Faces Servlet</servlet-name>
     <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>

@@ -7,6 +7,13 @@
     <p:tabView id="tabview">
 
         <p:tab title="Cadastro do Associado">
+        	
+        	<h:form>
+        		<div align="right">
+		        	<p:commandButton ajax="false" value="Atestado de Pobreza" icon="ui-icon-print" action="#{mbean.imprimirAtestadoPobreza}" rendered="#{mbeanModel.id != null}" style="margin-top: 20px; width: 180px" />
+		        	<p:commandButton ajax="false" value="Procuração Individual" icon="ui-icon-print" action="#{mbean.imprimirProcuracaoIndividual}" rendered="#{mbeanModel.id != null}" style="margin-top: 10px;" />    
+			        <p:commandButton ajax="false" value="Procuração Coletiva" icon="ui-icon-print" action="#{mbean.imprimirProcuracaoColetiva}" rendered="#{mbeanModel.id != null}" style="margin-top: 10px;" />
+		        </div>
 
             <h:panelGrid columns="2" rendered="#{mbeanModel.id != null}">
             
@@ -36,7 +43,7 @@
                         <h:panelGrid columns="1">
 
                             <p:outputLabel for="dataAdesao" value="Data de Adesão" style="color:red" />
-                            <p:calendar id="dataAdesao" pattern="dd/MM/yyyy" required="true" requiredMessage="Data de Adesão: Campo obrigatório" value="#{mbeanModel.dataAdesao}" styleClass="coluna90" style="color:red" />
+                            <p:calendar id="dataAdesao" pattern="dd/MM/yyyy" required="false" requiredMessage="Data de Adesão: Campo obrigatório" value="#{mbeanModel.dataAdesao}" styleClass="coluna90" style="color:red" />
 
                         </h:panelGrid>
 
@@ -46,9 +53,9 @@
                             <p:outputLabel for="nome" value="Nome" />
                             <p:outputLabel for="email" value="E-mail" />
 
-                            <p:inputText id="matricula" value="#{mbeanModel.matricula}" required="true" requiredMessage="Matrícula: Campo obrigatório" maxlength="30" styleClass="coluna90" />
-                            <p:inputText id="nome" value="#{mbeanModel.nome}" required="true" requiredMessage="Nome: Campo obrigatório" maxlength="100" styleClass="coluna95" />
-                            <p:inputText id="email" value="#{mbeanModel.email}" required="true" requiredMessage="E-mail: Campo obrigatório" validatorMessage="E-mail inválido" maxlength="50" styleClass="coluna90">
+                            <p:inputText id="matricula" value="#{mbeanModel.matricula}" required="false" requiredMessage="Matrícula: Campo obrigatório" maxlength="30" styleClass="coluna90" />
+                            <p:inputText id="nome" value="#{mbeanModel.nome}" required="false" requiredMessage="Nome: Campo obrigatório" maxlength="100" styleClass="coluna95" />
+                            <p:inputText id="email" value="#{mbeanModel.email}" required="false" requiredMessage="E-mail: Campo obrigatório" validatorMessage="E-mail inválido" maxlength="50" styleClass="coluna90">
                                 <f:validateRegex pattern="[\w\.-]*[a-zA-Z0-9_]@[\w\.-]*[a-zA-Z0-9]\.[a-zA-Z][a-zA-Z\.]*[a-zA-Z]" for="email" />
                             </p:inputText>
 
@@ -61,10 +68,10 @@
                             <p:outputLabel for="dataNascimento" value="Data de Nascimento" />
                             <p:outputLabel for="estadoCivil" value="Estado Civil" />
 
-                            <p:inputMask id="cpf" required="true" requiredMessage="CPF: Campo obrigatório" mask="999.999.999-99" value="#{mbeanModel.cpf}" maxlength="15" styleClass="coluna90" />
-                            <p:inputText id="rg" required="true" requiredMessage="RG: Campo obrigatório" value="#{mbeanModel.rg}" maxlength="20" styleClass="coluna90" />
-                            <p:calendar id="dataNascimento" pattern="dd/MM/yyyy" navigator="true" yearRange="c-100:c" required="true" requiredMessage="Data de Nascimento: Campo obrigatório" value="#{mbeanModel.dataNascimento}" style="width:95%" />
-                            <p:inputText id="estadoCivil" required="true" requiredMessage="Estado Civil: Campo obrigatório" value="#{mbeanModel.estadoCivil.descricao}" style="width:100%" />
+                            <p:inputMask id="cpf" required="false" requiredMessage="CPF: Campo obrigatório" mask="999.999.999-99" value="#{mbeanModel.cpf}" maxlength="15" styleClass="coluna90" />
+                            <p:inputText id="rg" required="false" requiredMessage="RG: Campo obrigatório" value="#{mbeanModel.rg}" maxlength="20" styleClass="coluna90" />
+                            <p:calendar id="dataNascimento" pattern="dd/MM/yyyy" navigator="true" yearRange="c-100:c" required="false" requiredMessage="Data de Nascimento: Campo obrigatório" value="#{mbeanModel.dataNascimento}" style="width:95%" />
+                            <p:inputText id="estadoCivil" required="false" requiredMessage="Estado Civil: Campo obrigatório" value="#{mbeanModel.estadoCivil.descricao}" style="width:100%" />
 
                         </h:panelGrid>
 
@@ -73,8 +80,8 @@
                             <p:outputLabel for="nomeMae" value="Nome da Mãe" />
                             <p:outputLabel for="nomePai" value="Nome do Pai" />
 
-                            <p:inputText id="nomeMae" value="#{mbeanModel.nomeMae}" required="true" requiredMessage="Nome da Mãe: Campo obrigatório" maxlength="100" styleClass="coluna95" />
-                            <p:inputText id="nomePai" value="#{mbeanModel.nomePai}" required="true" requiredMessage="Nome da Pai: Campo obrigatório" maxlength="100" styleClass="coluna98" />
+                            <p:inputText id="nomeMae" value="#{mbeanModel.nomeMae}" required="false" requiredMessage="Nome da Mãe: Campo obrigatório" maxlength="100" styleClass="coluna95" />
+                            <p:inputText id="nomePai" value="#{mbeanModel.nomePai}" required="false" requiredMessage="Nome da Pai: Campo obrigatório" maxlength="100" styleClass="coluna98" />
 
                         </h:panelGrid>
 
@@ -93,9 +100,9 @@
                     <p:outputLabel for="numero" value="Número" />
                     <p:outputLabel for="complemento" value="Complemento" />
 
-                    <p:inputMask id="cep" required="true" requiredMessage="Cep: Campo obrigatório" mask="99.999-999" value="#{mbeanModel.cep}" maxlength="10" styleClass="coluna85" />
-                    <p:inputText id="logradouro" required="true" requiredMessage="Logradouro: Campo obrigatório" value="#{mbeanModel.logradouro}" maxlength="100" styleClass="coluna95" />
-                    <p:inputText id="numero" required="true" requiredMessage="Número: Campo obrigatório" value="#{mbeanModel.numero}" maxlength="6" styleClass="coluna80" />
+                    <p:inputMask id="cep" required="false" requiredMessage="Cep: Campo obrigatório" mask="99.999-999" value="#{mbeanModel.cep}" maxlength="10" styleClass="coluna85" />
+                    <p:inputText id="logradouro" required="false" requiredMessage="Logradouro: Campo obrigatório" value="#{mbeanModel.logradouro}" maxlength="100" styleClass="coluna95" />
+                    <p:inputText id="numero" required="false" requiredMessage="Número: Campo obrigatório" value="#{mbeanModel.numero}" maxlength="6" styleClass="coluna80" />
                     <p:inputText id="complemento" value="#{mbeanModel.complemento}" maxlength="30" styleClass="coluna90" />
 
                 </h:panelGrid>
@@ -108,10 +115,10 @@
                     <p:outputLabel for="telefone" value="Telefone" />
                     <p:outputLabel for="celular" value="Celular" />
 
-                    <p:inputText id="bairro" required="true" requiredMessage="Bairro: Campo obrigatório" value="#{mbeanModel.bairro}" maxlength="80" styleClass="coluna92" />
+                    <p:inputText id="bairro" required="false" requiredMessage="Bairro: Campo obrigatório" value="#{mbeanModel.bairro}" maxlength="80" styleClass="coluna92" />
                     <p:inputText id="cidade" value="#{mbeanModel.cidade.estado.descricao}" />
                     <p:inputText id="estado" value="#{mbeanModel.cidade.descricao}" />
-                    <p:inputMask id="telefone" required="true" requiredMessage="Telefone: Campo obrigatório" mask="(99) 9999-9999" value="#{mbeanModel.telefone}" maxlength="14" styleClass="coluna90" />
+                    <p:inputMask id="telefone" required="false" requiredMessage="Telefone: Campo obrigatório" mask="(99) 9999-9999" value="#{mbeanModel.telefone}" maxlength="14" styleClass="coluna90" />
                     <p:inputMask id="celular" mask="(99) 9999-9999" value="#{mbeanModel.celular}" maxlength="14" styleClass="coluna90" />
 
                 </h:panelGrid>
@@ -140,7 +147,7 @@
 
             </p:fieldset>
 
-            <p:fieldset legend="Informações Cenajur">
+            <p:fieldset legend="Informações Cenajur" rendered="false">
 
                 <h:panelGrid columns="1" style="width:60%">
 
@@ -156,8 +163,8 @@
                     <p:outputLabel for="plano" value="Plano" />
                     <p:outputLabel for="diaVencimento" value="Dia de Vencimento" />
 
-                    <p:inputText id="plano" value="#{mbeanModel.plano.descricao}" required="true" requiredMessage="Plano: Campo obrigatório" style="width:90%" />
-                    <p:inputText mask="99" maxlength="2" id="diaVencimento" required="true" requiredMessage="Dia de Vencimento: Campo obrigatório" value="#{mbeanModel.diaVencimento}" onkeypress="mascara(this,integer);" styleClass="coluna90" />
+                    <p:inputText id="plano" value="#{mbeanModel.plano.descricao}" required="false" requiredMessage="Plano: Campo obrigatório" style="width:90%" />
+                    <p:inputText mask="99" maxlength="2" id="diaVencimento" required="false" requiredMessage="Dia de Vencimento: Campo obrigatório" value="#{mbeanModel.diaVencimento}" onkeypress="mascara(this,integer);" styleClass="coluna90" />
 
                 </h:panelGrid>
 
@@ -166,7 +173,7 @@
                     <p:outputLabel for="tipoPagamento" value="Tipo de Pagamento" />
                     <p:outputLabel for="flagAtivo" value="Ativo" />
 
-                    <p:inputText id="tipoPagamento" required="true" requiredMessage="Tipo de Pagamento: Campo obrigatório" value="#{mbeanModel.tipoPagamento.descricao}" style="width:90%" />
+                    <p:inputText id="tipoPagamento" required="false" requiredMessage="Tipo de Pagamento: Campo obrigatório" value="#{mbeanModel.tipoPagamento.descricao}" style="width:90%" />
                     <p:selectBooleanCheckbox id="flagAtivo" value="#{mbeanModel.flagAtivo}" />
 
                 </h:panelGrid>
@@ -176,14 +183,14 @@
                     <p:outputLabel for="dataCancelamento" value="Data de Cancelamento" rendered="#{!mbeanModel.flagAtivo}" />
                     <p:outputLabel for="motivoCancelamento" value="Motivo de Cancelamento" rendered="#{!mbeanModel.flagAtivo}" />
 
-                    <p:calendar id="dataCancelamento" pattern="dd/MM/yyyy" required="true" requiredMessage="Data de Cancelamento: Campo obrigatório" value="#{mbeanModel.dataCancelamento}" styleClass="coluna90" rendered="#{!mbeanModel.flagAtivo}" />
-                    <p:inputText id="motivoCancelamento" required="true" requiredMessage="Motivo do Cancelamento: Campo obrigatório" value="#{mbeanModel.motivoCancelamento.descricao}" style="width:90%" rendered="#{!mbeanModel.flagAtivo}" />
+                    <p:calendar id="dataCancelamento" pattern="dd/MM/yyyy" required="false" requiredMessage="Data de Cancelamento: Campo obrigatório" value="#{mbeanModel.dataCancelamento}" styleClass="coluna90" rendered="#{!mbeanModel.flagAtivo}" />
+                    <p:inputText id="motivoCancelamento" required="false" requiredMessage="Motivo do Cancelamento: Campo obrigatório" value="#{mbeanModel.motivoCancelamento.descricao}" style="width:90%" rendered="#{!mbeanModel.flagAtivo}" />
 
                 </h:panelGrid>
 
             </p:fieldset>
 
-            <p:fieldset legend="Informações Bancárias">
+            <p:fieldset legend="Informações Bancárias" rendered="false">
 
                 <h:panelGrid columns="4" columnClasses="coluna30, coluna20, coluna20, coluna20" style="width:60%">
 
@@ -238,7 +245,9 @@
                 </h:panelGrid>
         
             </p:outputPanel>
-                    
+            
+            </h:form>
+            
         </p:tab>
         
     </p:tabView>

@@ -159,6 +159,9 @@ public class Cliente extends TSActiveRecordAb<Cliente>{
 	private String observacoes;
 	
 	private String senha;
+
+	@Transient
+	private String senha2;
 	
 	@Column(name = "flag_rematricula")
 	private Boolean flagRematricula;
@@ -578,6 +581,14 @@ public class Cliente extends TSActiveRecordAb<Cliente>{
 		this.visitas = visitas;
 	}
 
+	public String getSenha2() {
+		return senha2;
+	}
+
+	public void setSenha2(String senha2) {
+		this.senha2 = senha2;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -730,8 +741,11 @@ public class Cliente extends TSActiveRecordAb<Cliente>{
 		return super.find("select distinct f.cliente from Faturamento f where f.flagPago = false and f.flagCancelado = false ", null);
 	}
 	
-	public Cliente autenticarPorEmailSenha() {
-		return super.get(" from Cliente c where c.email = ? and senha = ? ", email, Utilitarios.gerarHash(senha));
+	public Cliente autenticarPorMatriculaSenha() {
+		return super.get(" from Cliente c where c.matricula = ? and c.senha = ?", matricula, Utilitarios.gerarHash(senha));
 	}
 	
+	public Cliente autenticarPorMatricula() {
+		return super.get(" from Cliente c where c.matricula = ? ", matricula);
+	}
 }

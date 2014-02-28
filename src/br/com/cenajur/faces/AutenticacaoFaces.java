@@ -1,17 +1,12 @@
 package br.com.cenajur.faces;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 
 import br.com.cenajur.model.Cliente;
-import br.com.cenajur.model.Menu;
-import br.com.cenajur.model.Permissao;
 import br.com.cenajur.util.CenajurUtil;
-import br.com.cenajur.util.ColaboradorUtil;
-import br.com.cenajur.util.Constantes;
+import br.com.cenajur.util.EmailUtil;
+import br.com.cenajur.util.Utilitarios;
 import br.com.topsys.exception.TSApplicationException;
 import br.com.topsys.util.TSUtil;
 import br.com.topsys.web.faces.TSMainFaces;
@@ -24,8 +19,10 @@ public class AutenticacaoFaces extends TSMainFaces{
 
 	private String nomeTela;
 	private String tela;
-	private List<Menu> menusPrime;
 	private Cliente cliente;
+	private Long opcao;
+	private String confirmaSenha;
+	private String textoEmail;
 	
 	
     public AutenticacaoFaces() {
@@ -39,13 +36,11 @@ public class AutenticacaoFaces extends TSMainFaces{
 
     protected void clearFields() {
     	this.cliente = new Cliente();
-    	this.menusPrime = new ArrayList<Menu>();
+    	this.opcao = 1L;
     }
 
     public String limpar() {
     	
-    	ColaboradorUtil.remover();
-
         clearFields();
 
         TSFacesUtil.removeObjectInSession("clienteConectado");
@@ -54,54 +49,104 @@ public class AutenticacaoFaces extends TSMainFaces{
         
         return "sair";
     }
+    
+    public String redirecionar() {
+        return "sucesso";
+    }
 
     public String entrar() {
     	
-    	Cliente cliente = this.cliente.autenticarPorEmailSenha();
+    	Cliente cliente = this.cliente.autenticarPorMatriculaSenha();
     	
     	if(!TSUtil.isEmpty(cliente)){
     		
-			this.menusPrime.clear();
-			
 			TSFacesUtil.addObjectInSession("clienteConectado", cliente);
 			
-			Permissao permissao = new Permissao(Constantes.PERMISSAO_CLIENTE).getById();
-			
-			Menu menu = permissao.getMenu();
-			menu.getPermissoes().clear();
-			menu.getPermissoes().add(permissao);
-			
-			this.menusPrime.add(menu);
-			
-			this.tela = permissao.getUrl();
-			this.nomeTela = permissao.getDescricao();
+			this.tela = "/pages/processo/cliente.xhtml";
+			this.nomeTela = "Associado";
 			
 			return "entrar";
     			
-    	} else{
+    	} else {
     		
     		CenajurUtil.addErrorMessage("Usuário ou senha não conferem");
 			return "login";
     	}
     }
-    
 
 	public String recuperarSenha(){
-    	return "sucesso";
+		
+		Cliente cliente = this.cliente.autenticarPorMatricula();
+    	
+    	if (TSUtil.isEmpty(cliente)) {
+    		
+    		super.addErrorMessage("Usuário não localizado");
+    		
+    	} else {
+    		
+    		try {
+    			
+    			String novaSenha = "" + CenajurUtil.gerarNumeroAleatorio();
+    			
+    			cliente.setSenha(Utilitarios.gerarHash(novaSenha));
+    		
+				cliente.update();
+	    		
+	    		String texto = "Prezado(a), sua nova senha para acessar o sistema do Cenajur é: " + novaSenha;
+	    		
+	    		new EmailUtil().enviarEmailTratado(cliente.getEmail(), "Recuperação de Senha", texto, null);
+	    		
+	    		super.addInfoMessage("Uma nova senha foi enviada para seu e-mail");
+	    		
+	    		this.opcao = 1L;
+	    		
+			} catch (Exception e) { 
+				e.printStackTrace();
+				super.addErrorMessage("Ocorreu um erro ao tentar enviar a senha para o email cadastrado");
+			}
+    		
+    	}
+    	
+    	return "login";
     }
     	
     public String alterarSenha() throws TSApplicationException{
+
+    	Cliente cliente = this.cliente.autenticarPorMatriculaSenha();
+    	
+    	if(TSUtil.isEmpty(cliente)){
+    		
+    		CenajurUtil.addErrorMessage("Usuário ou Senha inválidos");
+    		
+    	} else {
+    		
+    		cliente.setSenha(Utilitarios.gerarHash(this.cliente.getSenha2()));
+    		cliente.update();
+    		CenajurUtil.addInfoMessage("Senha alterada com sucesso");
+    		this.opcao = 1L;
+    		
+    	}
+    	
+    	return "login";
+    }
+    
+    public String enviarEmail(){
+    	
+    	StringBuilder texto = new StringBuilder();
+    	
+    	texto.append("Matrícula: ").append(CenajurUtil.getUsuarioConectado().getMatricula()).append("<br/>");
+    	texto.append("Nome: ").append(CenajurUtil.getUsuarioConectado().getNome()).append("<br/><br/>");
+    	texto.append(this.textoEmail);
+    	
+    	new EmailUtil().enviarEmailTratado("cenajur@cenajur.com.br", "Fale Conosco - Associado", texto.toString(), "text/html");
+    	
+    	super.addInfoMessage("Email enviado com sucesso");
+    	
+    	this.textoEmail = null;
+    	
     	return "sucesso";
     }
     
-    public List<Menu> getMenusPrime() {
-		return menusPrime;
-	}
-
-	public void setMenusPrime(List<Menu> menusPrime) {
-		this.menusPrime = menusPrime;
-	}
-
 	public Cliente getCliente() {
 		return cliente;
 	}
@@ -124,6 +169,30 @@ public class AutenticacaoFaces extends TSMainFaces{
 
 	public void setTela(String tela) {
 		this.tela = tela;
+	}
+
+	public Long getOpcao() {
+		return opcao;
+	}
+
+	public void setOpcao(Long opcao) {
+		this.opcao = opcao;
+	}
+
+	public String getConfirmaSenha() {
+		return confirmaSenha;
+	}
+
+	public void setConfirmaSenha(String confirmaSenha) {
+		this.confirmaSenha = confirmaSenha;
+	}
+
+	public String getTextoEmail() {
+		return textoEmail;
+	}
+
+	public void setTextoEmail(String textoEmail) {
+		this.textoEmail = textoEmail;
 	}
     	
 }
