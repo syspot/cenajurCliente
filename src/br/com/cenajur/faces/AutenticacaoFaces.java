@@ -60,6 +60,7 @@ public class AutenticacaoFaces extends TSMainFaces{
     	
     	if(!TSUtil.isEmpty(cliente)){
     		
+    		TSFacesUtil.removeObjectInSession("clienteConectado");
 			TSFacesUtil.addObjectInSession("clienteConectado", cliente);
 			
 			this.tela = "/pages/processo/cliente.xhtml";

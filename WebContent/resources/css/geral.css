@@ -1169,3 +1169,5 @@ ui-icon.delete {
 	font-weight: normal/*{fwDefault}*/;
 	color: black/*{fcDefault}*/;
 }
+
+.combo{padding: 3px; border: 1px solid #cbc7bd; border-radius: 6px; box-shadow: inset 0 2px 2px #8f8f8f;}
