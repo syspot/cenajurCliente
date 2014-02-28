@@ -8,25 +8,31 @@
 
         <p:tab title="Cadastro do Associado">
         	
+        	<p:fieldset style="text-align: center" rendered="#{not empty mbeanModel.faturasAbertas}">
+        		<h:outputText value="Prezado(a) Associado(a), não foi detectado o pagamento da mensalidade referente a (#{mbeanModel.faturasAbertas}). Caso já tenha sido efetivado, favor contactar o Cenajur." style="font-weight: bold; font-size: 1.3em; text-align: center" rendered="false"/>
+        		<h:outputText value="Prezado(a) Associado(a), não foi detectado o pagamento da última mensalidade. Caso já tenha sido efetivado, favor contactar o Cenajur." style="font-weight: bold; font-size: 1.3em; text-align: center" />
+        	</p:fieldset>
+        	
         	<h:form>
         		<div align="right">
 		        	<p:commandButton ajax="false" value="Atestado de Pobreza" icon="ui-icon-print" action="#{mbean.imprimirAtestadoPobreza}" rendered="#{mbeanModel.id != null}" style="margin-top: 20px; width: 180px" />
 		        	<p:commandButton ajax="false" value="Procuração Individual" icon="ui-icon-print" action="#{mbean.imprimirProcuracaoIndividual}" rendered="#{mbeanModel.id != null}" style="margin-top: 10px;" />    
 			        <p:commandButton ajax="false" value="Procuração Coletiva" icon="ui-icon-print" action="#{mbean.imprimirProcuracaoColetiva}" rendered="#{mbeanModel.id != null}" style="margin-top: 10px;" />
 		        </div>
+	        </h:form>
 
             <h:panelGrid columns="2" rendered="#{mbeanModel.id != null}">
+    
+                <h:outputText value="Nome:" style="font-weight: bold; font-size: 1.6em; text-align: left" />
+                <h:outputText value="#{mbeanModel.nome}" style="font-weight: bold; font-size: 1.6em; color: red; text-align: left" />
             
-                <h:outputText value="Matrícula:" style="font-weight: bold; font-size: 1.6em; text-align: left" />
-                <h:outputText value="#{mbeanModel.matricula}" style="font-weight: bold; font-size: 1.6em; color: red; text-align: left" />
-                
             </h:panelGrid>
             
             <h:panelGrid columns="4" rendered="#{mbeanModel.id != null}">
     
-                <h:outputText value="Nome:" style="font-weight: bold; font-size: 1.6em; text-align: left" />
-                <h:outputText value="#{mbeanModel.nome}" style="font-weight: bold; font-size: 1.6em; color: red; text-align: left" />
-    
+                <h:outputText value="Matrícula:" style="font-weight: bold; font-size: 1.6em; text-align: left" />
+                <h:outputText value="#{mbeanModel.matricula}" style="font-weight: bold; font-size: 1.6em; color: red; text-align: left" />
+                
                 <h:outputText value="Data de Adesão:" style="font-weight: bold; font-size: 1.6em; text-align: left; margin-left: 20px" />
                 <h:outputText value="#{mbeanModel.dataAdesao}" style="font-weight: bold; font-size: 1.6em; color: red; text-align: left">
                     <f:convertDateTime pattern="dd/MM/yyyy" locale="pt_BR" timeZone="America/Recife" />
@@ -124,7 +130,11 @@
                 </h:panelGrid>
 
             </p:fieldset>
-
+            
+            <p:fieldset style="text-align: center">
+	            <h:outputText value="Prezado(a) Senhor(a), o CENAJUR envia mensagens por e-mail e SMS, assim é importante que Vossa Senhoria mantenha seus dados sempre atualizados." style="font-weight: bold; font-size: 1.3em; text-align: center" />
+			</p:fieldset>
+			
             <p:fieldset legend="Informações Funcionais">
 
                 <h:panelGrid columns="2" columnClasses="coluna30, coluna70" style="width:60%">
@@ -222,7 +232,7 @@
 
                 <h:panelGrid columns="1" style="width: 98%">
                     
-                    <p:fieldset legend="Processos" toggleable="true" style="width: 100%">
+                    <p:fieldset legend="Processos (#{mbean.processoAux.processos.size()})" toggleable="true" style="width: 100%">
         
                         <p:outputPanel layout="inline">
                         
@@ -246,7 +256,9 @@
         
             </p:outputPanel>
             
-            </h:form>
+            <p:fieldset style="width:95.2%; text-align: center">
+            	<h:outputText value="Desde 2002 a AGEPOL/CENAJUR presta assistência jurírica efetiva e com qualidade, ética, responsabilidade e experiência" style="font-weight: bold; font-size: 1.3em; text-align: center" />
+            </p:fieldset>
             
         </p:tab>
         

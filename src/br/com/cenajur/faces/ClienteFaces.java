@@ -14,6 +14,7 @@ import br.com.cenajur.model.Audiencia;
 import br.com.cenajur.model.Banco;
 import br.com.cenajur.model.Cliente;
 import br.com.cenajur.model.Colaborador;
+import br.com.cenajur.model.Faturamento;
 import br.com.cenajur.model.Graduacao;
 import br.com.cenajur.model.MotivoCancelamento;
 import br.com.cenajur.model.Processo;
@@ -68,6 +69,18 @@ public class ClienteFaces implements Serializable {
 	}
 	
 	protected void posDetail() {
+		
+		Faturamento faturamento = CenajurUtil.obterFaturamentoDevedor();
+
+		faturamento.setCliente(this.cliente);
+
+		List<Faturamento> faturasAbertas = faturamento.pesquisarFaturasAbertas();
+		
+		this.cliente.setFaturasAbertas("");
+
+		for (Faturamento fatura : faturasAbertas) {
+			this.cliente.setFaturasAbertas(this.cliente.getFaturasAbertas() + (TSUtil.isEmpty(this.cliente.getFaturasAbertas()) ? "" : ", ") + fatura.getMes() + "/" + fatura.getAno());
+		}
 		
 		for(Processo processo : this.cliente.getProcessos()){
 			

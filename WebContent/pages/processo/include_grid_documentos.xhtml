@@ -1,28 +1,24 @@
 <ui:composition xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:h="http://java.sun.com/jsf/html" xmlns:p="http://primefaces.org/ui" xmlns:f="http://java.sun.com/jsf/core">
 
-    <p:outputPanel id="opGridDocumentos" autoUpdate="true">
+	<p:outputPanel id="opGridDocumentos" layout="block" autoUpdate="true" style="width: 100%">
 
-        <p:dataTable id="gridDocumentos" emptyMessage="Nenhum documento encontrado" style="width: 90%" paginator="true" paginatorAlwaysVisible="false" rows="10" value="#{mbeanModel.documentos}" var="documento">
+		<p:dataTable id="gridDocumentos" emptyMessage="Nenhum documento encontrado" style="width: 90%" styleClass="table100" paginator="true" paginatorAlwaysVisible="false" rows="10" value="#{mbeanModel.documentos}" var="documento">
 
-            <p:column headerText="Categoria">
-                <h:outputText value="#{documento.categoriaDocumento.descricao}" />
-            </p:column>
+			<p:column headerText="Categoria">
+				<h:outputText value="#{documento.categoriaDocumento.descricao}" />
+			</p:column>
 
-            <p:column headerText="Visualizar" styleClass="coluna5">
+			<p:column headerText="Visualizar" styleClass="coluna5">
 
-                <p:outputPanel rendered="#{documento.id != null}">
-                    <a target="_blank" href="${documento.caminhoDownloadCompleto}"> <h:graphicImage value="../resources/images/lupa.png" width="16" style="border: 0px" />
-                    </a>
-                </p:outputPanel>
+				<p:outputPanel>
+					<a target="_blank" href="${documento.caminhoDownloadCompleto}"> <h:graphicImage value="../resources/images/lupa.png" width="16" style="border: 0px" />
+					</a>
+				</p:outputPanel>
 
-                <p:outputPanel rendered="#{documento.id == null}">
-                    <h:outputText value="-" />
-                </p:outputPanel>
+			</p:column>
 
-            </p:column>
+		</p:dataTable>
 
-        </p:dataTable>
-
-    </p:outputPanel>
+	</p:outputPanel>
 
 </ui:composition>

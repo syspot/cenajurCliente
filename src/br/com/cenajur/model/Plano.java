@@ -43,6 +43,12 @@ public class Plano extends TSActiveRecordAb<Plano>{
 		this.flagAtivo = flagAtivo;
 	}
 	
+	public Plano(Long id, String descricao) {
+		super();
+		this.id = id;
+		this.descricao = descricao;
+	}
+
 	public Long getId() {
 		return TSUtil.tratarLong(id);
 	}

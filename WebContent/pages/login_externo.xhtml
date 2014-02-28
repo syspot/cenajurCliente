@@ -1,0 +1,25 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+</h:head>
+
+<h:body>
+
+	<h:form target="_parent">
+		<h:panelGrid columns="5" style="width: 100%">
+			<h:outputLabel for="usuario" value="Matrícula:" />
+			<h:inputText id="usuario" required="true" requiredMessage="Matrícula: Obrigatório" value="#{autenticacaoFaces.cliente.matricula}" maxlength="20" style="width: 97%;" />
+			<h:outputLabel for="senha" value="Senha:" />
+			<h:inputSecret id="senha" required="true" requiredMessage="Senha: Obrigatório" value="#{autenticacaoFaces.cliente.senha}" maxlength="20" style="width: 97%;" />
+			<h:commandButton id="btnAcessar" value="Acessar" title="Acessar" action="#{autenticacaoFaces.entrar}" />
+		</h:panelGrid>
+	</h:form>
+
+</h:body>
+
+
+</html>
+
+

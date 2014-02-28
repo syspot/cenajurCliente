@@ -179,7 +179,7 @@ public class AndamentoProcesso extends TSActiveRecordAb<AndamentoProcesso>{
 	}
 	
 	public List<AndamentoProcesso> findByProcesso(Processo processo){
-		return super.find("from AndamentoProcesso a where a.processoNumero.processo.id = ?", "a.dataAndamento" ,processo.getId());
+		return super.find("from AndamentoProcesso a where a.processoNumero.processo.id = ?", "a.dataAndamento desc" ,processo.getId());
 	}
 	
 	@Override
@@ -227,7 +227,7 @@ public class AndamentoProcesso extends TSActiveRecordAb<AndamentoProcesso>{
 			params.add(CenajurUtil.tratarString(descricao));
 		}
 		
-		return super.find(query.toString(), "a.dataAndamento", params.toArray());
+		return super.find(query.toString(), "a.dataAndamento desc", params.toArray());
 	}
 	
 	public List<AndamentoProcesso> pesquisarAndamentoRecente(){

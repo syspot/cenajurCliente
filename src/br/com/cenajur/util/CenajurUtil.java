@@ -21,6 +21,7 @@ import org.apache.pdfbox.util.PDFTextStripper;
 import org.primefaces.model.UploadedFile;
 
 import br.com.cenajur.model.Cliente;
+import br.com.cenajur.model.Faturamento;
 import br.com.topsys.exception.TSApplicationException;
 import br.com.topsys.exception.TSSystemException;
 import br.com.topsys.file.TSFile;
@@ -186,7 +187,7 @@ public class CenajurUtil {
 	}
 	
 	public static String obterResumoGrid(String texto, int tamanho){
-		return texto.length() < tamanho ? texto : texto.substring(0, tamanho) + "...";
+		return TSUtil.isEmpty(texto) ? "" : texto.length() < tamanho ? texto : texto.substring(0, tamanho) + "...";
 	}
 	
 	public static String getDescricaoPDF(UploadedFile event){
@@ -318,6 +319,18 @@ public class CenajurUtil {
 		parametros.put("REPORT_LOCALE", new Locale("pt","BR"));
 		
 		return parametros;
+	}
+	
+	public static Faturamento obterFaturamentoDevedor(){
+		
+		Calendar c = Calendar.getInstance();
+		
+		Faturamento faturamento = new Faturamento();
+		
+		faturamento.setAno(c.get(Calendar.YEAR));
+		faturamento.setMes(c.get(Calendar.MONTH) + 1);
+		
+		return faturamento;
 	}
 	
 }
