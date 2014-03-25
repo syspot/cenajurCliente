@@ -686,8 +686,6 @@ public class Cliente extends TSActiveRecordAb<Cliente>{
 		
 		query.append(this.obterCondicionalQuery());
 		
-		query.append(" and c.flagAssociado = true ");
-		
 		return super.find(query.toString(), "nome", this.obterCondicionalParans().toArray());
 	}
 	
@@ -702,8 +700,6 @@ public class Cliente extends TSActiveRecordAb<Cliente>{
 		}
 		
 		query.append(this.obterCondicionalQuery());
-		
-		query.append(" and c.flagAssociado = true ");
 		
 		return super.find(query.toString(), "nome", this.obterCondicionalParans().toArray());
 		
@@ -726,11 +722,11 @@ public class Cliente extends TSActiveRecordAb<Cliente>{
 	}
 	
 	public List<Cliente> pesquisarNovosAssociados(){
-		return super.find("select c from Cliente c where date(c.dataAdesao) = date(current_date() - 1) and c.flagAtivo = true and c.flagAssociado = true ", null);
+		return super.find("select c from Cliente c where date(c.dataAdesao) = date(current_date() - 1) and c.flagAtivo = true ", null);
 	}
 	
 	public List<Cliente> pesquisarAniversariantes(){
-		return super.find("select c from Cliente c where to_char(c.dataNascimento, 'dd/mm') = to_char(current_date(), 'dd/mm') and c.flagAtivo = true and c.flagAssociado = true", null);
+		return super.find("select c from Cliente c where to_char(c.dataNascimento, 'dd/mm') = to_char(current_date(), 'dd/mm') and c.flagAtivo = true ", null);
 	}
 	
 	public List<Cliente> pesquisarInadimplentes(Integer mes, Integer ano){
